@@ -1,0 +1,725 @@
+{
+  "address": "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox",
+  "metadata": {
+    "name": "kuroshio",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Shared stablecoin book on Solana"
+  },
+  "instructions": [
+    {
+      "name": "initialize",
+      "docs": [
+        "Opens the shared book and records the four mints in ascending address order."
+      ],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "mint_0"
+        },
+        {
+          "name": "mint_1"
+        },
+        {
+          "name": "mint_2"
+        },
+        {
+          "name": "mint_3"
+        },
+        {
+          "name": "vault_0"
+        },
+        {
+          "name": "vault_1"
+        },
+        {
+          "name": "vault_2"
+        },
+        {
+          "name": "vault_3"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "seed_band",
+      "docs": [
+        "Mints the next liquidity band into the vaults. The eighth band opens trading."
+      ],
+      "discriminator": [
+        60,
+        238,
+        211,
+        85,
+        149,
+        79,
+        245,
+        234
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "mint_0",
+          "writable": true
+        },
+        {
+          "name": "mint_1",
+          "writable": true
+        },
+        {
+          "name": "mint_2",
+          "writable": true
+        },
+        {
+          "name": "mint_3",
+          "writable": true
+        },
+        {
+          "name": "vault_0",
+          "writable": true
+        },
+        {
+          "name": "vault_1",
+          "writable": true
+        },
+        {
+          "name": "vault_2",
+          "writable": true
+        },
+        {
+          "name": "vault_3",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "swap",
+      "docs": [
+        "Swaps one book token for another on the shared sphere."
+      ],
+      "discriminator": [
+        248,
+        198,
+        158,
+        145,
+        225,
+        117,
+        135,
+        200
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "input_mint"
+        },
+        {
+          "name": "output_mint"
+        },
+        {
+          "name": "input_vault",
+          "writable": true
+        },
+        {
+          "name": "output_vault",
+          "writable": true
+        },
+        {
+          "name": "user_input",
+          "writable": true
+        },
+        {
+          "name": "user_output",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "input_index",
+          "type": "u8"
+        },
+        {
+          "name": "output_index",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "limit",
+          "type": "u64"
+        },
+        {
+          "name": "deadline",
+          "type": "i64"
+        },
+        {
+          "name": "exact_in",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "faucet",
+      "docs": [
+        "Mints 1,000 whole tokens of one book asset. Each wallet can claim a mint once."
+      ],
+      "discriminator": [
+        0,
+        98,
+        59,
+        30,
+        144,
+        142,
+        113,
+        12
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool"
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "user_token",
+          "writable": true
+        },
+        {
+          "name": "receipt",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "buy_with_sol",
+      "docs": [
+        "Buys a book token with SOL. One SOL mints 100 whole tokens, and the SOL does not enter the book."
+      ],
+      "discriminator": [
+        49,
+        57,
+        124,
+        194,
+        240,
+        20,
+        216,
+        102
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool"
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "user_token",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "index",
+          "type": "u8"
+        },
+        {
+          "name": "lamports",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "attach_metadata",
+      "docs": [
+        "Publishes the name and symbol for one book mint. An image URI is optional."
+      ],
+      "discriminator": [
+        108,
+        247,
+        212,
+        125,
+        7,
+        240,
+        165,
+        112
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool"
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "metadata",
+          "writable": true
+        },
+        {
+          "name": "metadata_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "rent"
+        }
+      ],
+      "args": [
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "kuroshio::FaucetReceipt",
+      "discriminator": [
+        226,
+        121,
+        83,
+        120,
+        145,
+        233,
+        226,
+        179
+      ]
+    },
+    {
+      "name": "kuroshio::Pool",
+      "discriminator": [
+        241,
+        154,
+        109,
+        4,
+        17,
+        177,
+        109,
+        188
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "kuroshio::Band",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price_bps",
+            "type": "u16"
+          },
+          {
+            "name": "frozen",
+            "type": "bool"
+          },
+          {
+            "name": "reserves",
+            "type": {
+              "array": [
+                "u128",
+                4
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "kuroshio::FaucetReceipt",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "claimed",
+            "type": {
+              "array": [
+                "u64",
+                4
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "kuroshio::Pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "authority_bump",
+            "type": "u8"
+          },
+          {
+            "name": "seeded_bands",
+            "type": "u8"
+          },
+          {
+            "name": "trading_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "mints",
+            "type": {
+              "array": [
+                "pubkey",
+                4
+              ]
+            }
+          },
+          {
+            "name": "vaults",
+            "type": {
+              "array": [
+                "pubkey",
+                4
+              ]
+            }
+          },
+          {
+            "name": "decimals",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          },
+          {
+            "name": "radius",
+            "type": "u128"
+          },
+          {
+            "name": "bands",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "kuroshio::Band"
+                  }
+                },
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "kuroshio::BuyEvent",
+      "type": {
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ],
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "kuroshio::FaucetEvent",
+      "type": {
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ],
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "kuroshio::SwapEvent",
+      "type": {
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "input_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "output_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_out",
+            "type": "u64"
+          }
+        ],
+        "kind": "struct"
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Math",
+      "msg": "The book rejected this swap"
+    },
+    {
+      "code": 6001,
+      "name": "Expired",
+      "msg": "This quote expired"
+    },
+    {
+      "code": 6002,
+      "name": "Slippage",
+      "msg": "The price moved past the slippage limit"
+    },
+    {
+      "code": 6003,
+      "name": "NotReady",
+      "msg": "The book is not open yet"
+    },
+    {
+      "code": 6004,
+      "name": "AlreadySeeded",
+      "msg": "This band is already seeded"
+    },
+    {
+      "code": 6005,
+      "name": "BadMintOrder",
+      "msg": "Mints must be passed in ascending address order"
+    },
+    {
+      "code": 6006,
+      "name": "BadVault",
+      "msg": "A mint or vault does not belong to this book"
+    },
+    {
+      "code": 6007,
+      "name": "FaucetCap",
+      "msg": "This wallet already used the faucet for that token"
+    },
+    {
+      "code": 6008,
+      "name": "SameAsset",
+      "msg": "Pay and receive must be different tokens"
+    },
+    {
+      "code": 6009,
+      "name": "Insolvent",
+      "msg": "The vault no longer covers the book"
+    },
+    {
+      "code": 6010,
+      "name": "TooSmall",
+      "msg": "This SOL amount buys no tokens"
+    },
+    {
+      "code": 6011,
+      "name": "TooLarge",
+      "msg": "One buy can spend at most 100 SOL"
+    },
+    {
+      "code": 6012,
+      "name": "MetadataExists",
+      "msg": "This token already has metadata"
+    }
+  ],
+  "events": [
+    {
+      "discriminator": [
+        103,
+        244,
+        82,
+        31,
+        44,
+        245,
+        119,
+        119
+      ],
+      "name": "kuroshio::BuyEvent"
+    },
+    {
+      "discriminator": [
+        27,
+        185,
+        27,
+        65,
+        21,
+        254,
+        165,
+        149
+      ],
+      "name": "kuroshio::FaucetEvent"
+    },
+    {
+      "discriminator": [
+        64,
+        198,
+        205,
+        232,
+        38,
+        8,
+        113,
+        226
+      ],
+      "name": "kuroshio::SwapEvent"
+    }
+  ]
+}

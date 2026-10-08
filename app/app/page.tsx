@@ -6,12 +6,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Connection, PublicKey, Transaction } from "@solana/web3.js";
 import { Suspense, useEffect, useId, useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
+import { TokenMark } from "@/components/token-mark";
+import { WalletTransfer } from "@/components/wallet-transfer";
 import { bookTokens, publicEnv } from "@/lib/env";
 import {
   buyWithSolTransaction,
   claimKusdcTransaction,
   explainProgramError,
   fetchBook,
+  fetchOwnerBalance,
   formatTokenAmount,
   parseTokenAmount,
   quoteExactIn,
@@ -24,7 +27,7 @@ import { hasClaimedReward, saveClaimedReward } from "@/lib/reward-claim";
 
 type BookSymbol = (typeof bookTokens)[number]["symbol"];
 type PaySymbol = BookSymbol | "SOL";
-type Panel = "swap" | "book" | "bands";
+type Panel = "swap" | "send" | "receive" | "book" | "bands";
 const SLIPPAGE_PRESETS = [0.1, 0.5, 1];
 
 function formatSlippage(value: number) {
@@ -158,11 +161,6 @@ function dollars(value: string) {
   return amount.toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
-function TokenMark({ symbol }: { symbol: string }) {
-  const label = symbol === "SOL" ? "SOL" : symbol.slice(1, 3);
-  return <span className={`token-mark mark-${symbol}`}>{label}</span>;
-}
-
 function TokenPill<T extends string>({
   value,
   options,
@@ -258,18 +256,25 @@ function ApplicationScreen() {
   const router = useRouter();
   const params = useSearchParams();
   const requested = params.get("panel");
-  const panel: Panel = requested === "book" || requested === "bands" ? requested : "swap";
+  const panel: Panel =
+    requested === "book" || requested === "bands" || requested === "send" || requested === "receive"
+      ? requested
+      : "swap";
   const [pay, setPay] = useState<PaySymbol>(bookTokens[0].symbol);
   const [receive, setReceive] = useState<BookSymbol>(bookTokens[1].symbol);
   const [amount, setAmount] = useState("0");
   const [slippage, setSlippage] = useState(0.5);
   const [ready, setReady] = useState(false);
   const [book, setBook] = useState<OnchainBook | null>(null);
+  const [bookError, setBookError] = useState("");
+  const [payBalance, setPayBalance] = useState<bigint | null>(null);
+  const [receiveBalance, setReceiveBalance] = useState<bigint | null>(null);
   const [notice, setNotice] = useState("");
   const [signature, setSignature] = useState("");
   const [pending, setPending] = useState(false);
   const [claimed, setClaimed] = useState(false);
-  const { address, isConnected } = useAppKitAccount();
+  const [walletReady, setWalletReady] = useState(false);
+  const { address, isConnected, status } = useAppKitAccount();
   const { walletProvider } = useAppKitProvider<Provider>("solana");
 
   useEffect(() => {
@@ -277,8 +282,24 @@ function ApplicationScreen() {
   }, []);
 
   useEffect(() => {
-    if (ready && panel === "swap" && !isConnected) router.replace("/connect");
-  }, [ready, panel, isConnected, router]);
+    if (status === "connecting" || status === "reconnecting") {
+      setWalletReady(false);
+      return;
+    }
+    if (status === "connected") {
+      setWalletReady(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setWalletReady(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, [status]);
+
+  useEffect(() => {
+    if (!ready || !walletReady) return;
+    if ((panel === "swap" || panel === "send" || panel === "receive") && status === "disconnected") {
+      router.replace("/connect");
+    }
+  }, [ready, walletReady, panel, status, router]);
 
   useEffect(() => {
     if (!address) {
@@ -295,10 +316,15 @@ function ApplicationScreen() {
     const load = () => {
       fetchBook(connection)
         .then((next) => {
-          if (!stop) setBook(next);
+          if (stop) return;
+          setBook(next);
+          setBookError(next ? "" : "The devnet book is not on this cluster.");
         })
         .catch(() => {
-          if (!stop) setBook(null);
+          if (!stop) {
+            setBook(null);
+            setBookError("The devnet book did not load.");
+          }
         });
     };
     load();
@@ -314,6 +340,39 @@ function ApplicationScreen() {
   const payToken = bookTokens.find((token) => token.symbol === pay);
   const receiveToken = bookTokens.find((token) => token.symbol === receive);
   const payOptions: PaySymbol[] = ["SOL", ...bookTokens.map((token) => token.symbol)];
+
+  useEffect(() => {
+    if (!ready || !address) {
+      setPayBalance(null);
+      setReceiveBalance(null);
+      return;
+    }
+    const connection = new Connection(publicEnv.rpcUrl, "confirmed");
+    let stop = false;
+    const load = async () => {
+      try {
+        const owner = new PublicKey(address);
+        const payMint = payingSol || !payToken?.mint ? null : new PublicKey(payToken.mint);
+        const receiveMint = receiveToken?.mint ? new PublicKey(receiveToken.mint) : null;
+        const [nextPay, nextReceive] = await Promise.all([
+          fetchOwnerBalance(connection, owner, payMint),
+          receiveMint ? fetchOwnerBalance(connection, owner, receiveMint) : Promise.resolve(0n),
+        ]);
+        if (stop) return;
+        setPayBalance(nextPay);
+        setReceiveBalance(nextReceive);
+      } catch {
+        if (!stop) {
+          setPayBalance(null);
+          setReceiveBalance(null);
+        }
+      }
+    };
+    void load();
+    return () => {
+      stop = true;
+    };
+  }, [ready, address, payingSol, payToken?.mint, receiveToken?.mint, signature]);
 
   function choosePay(next: PaySymbol) {
     setPay(next);
@@ -359,7 +418,29 @@ function ApplicationScreen() {
   const quotedOut = quote && typeof quote !== "string" ? quote : null;
   const quoteError = typeof quote === "string" ? quote : "";
   const receiveText =
-    quotedOut && receiveToken ? formatTokenAmount(quotedOut.amountOut, receiveToken.decimals) : amount === "" ? "0" : "0";
+    quotedOut && receiveToken ? formatTokenAmount(quotedOut.amountOut, receiveToken.decimals) : "0";
+  const payDecimals = payingSol ? 9 : (payToken?.decimals ?? 0);
+  const receiveDecimals = receiveToken?.decimals ?? 0;
+  const payBalanceText =
+    payBalance === null ? "…" : `${formatTokenAmount(payBalance, payDecimals)} ${pay}`;
+  const receiveBalanceText =
+    receiveBalance === null ? "Balance …" : `Balance ${formatTokenAmount(receiveBalance, receiveDecimals)}`;
+  const shortBalance = payBalance !== null && payNative !== null && payNative > payBalance;
+  const actionLabel = pending
+    ? "Confirm in wallet"
+    : !programReady
+      ? "Devnet program is not deployed yet"
+      : !book
+        ? "Loading the book"
+        : payNative === null || payNative <= 0n
+          ? "Enter an amount"
+          : quoteError
+            ? "Quote unavailable"
+            : shortBalance
+              ? `Not enough ${pay}`
+              : payingSol
+                ? "Buy"
+                : "Swap";
 
   async function send(transaction: Transaction) {
     if (!address || !walletProvider) throw new Error("Connect a wallet first");
@@ -446,12 +527,27 @@ function ApplicationScreen() {
                   <span>Pay</span>
                   <TokenPill value={pay} options={payOptions} onChange={choosePay} />
                 </div>
-                <input
-                  aria-label="Pay amount"
-                  inputMode="decimal"
-                  value={amount}
-                  onChange={(event) => setAmount(event.target.value)}
-                />
+                <div className="pay-amount">
+                  <input
+                    aria-label="Pay amount"
+                    inputMode="decimal"
+                    value={amount}
+                    onChange={(event) => setAmount(event.target.value)}
+                  />
+                  <div className="pay-max">
+                    <button
+                      type="button"
+                      className="max-button"
+                      disabled={payBalance === null || payBalance === 0n}
+                      onClick={() => {
+                        if (payBalance !== null) setAmount(formatTokenAmount(payBalance, payDecimals));
+                      }}
+                    >
+                      Max
+                    </button>
+                    <span className="token-balance">{payBalanceText}</span>
+                  </div>
+                </div>
                 <p>{payingSol ? "Native SOL" : dollars(amount)}</p>
               </div>
               <button type="button" className="flip-button" aria-label="Switch pay and receive" onClick={flip}>
@@ -460,7 +556,10 @@ function ApplicationScreen() {
               <div className="trade-side">
                 <div className="trade-label">
                   <span>Receive</span>
-                  <TokenPill value={receive} options={receiveOptions} onChange={setReceive} />
+                  <div className="token-choice">
+                    <TokenPill value={receive} options={receiveOptions} onChange={setReceive} />
+                    <span className="token-balance">{receiveBalanceText}</span>
+                  </div>
                 </div>
                 <output>{receiveText}</output>
                 <p>
@@ -468,16 +567,16 @@ function ApplicationScreen() {
                     ? `${dollars(formatTokenAmount(quotedOut.amountOut, receiveToken.decimals))} · ${TOKENS_PER_SOL} tokens per SOL`
                     : quotedOut && receiveToken
                       ? `${dollars(formatTokenAmount(quotedOut.amountOut, receiveToken.decimals))} · fee ${formatTokenAmount(quotedOut.fee, payToken?.decimals ?? 6)} ${pay}`
-                      : quoteError || "Quote from the devnet book"}
+                      : bookError || quoteError || "Quote from the devnet book"}
                 </p>
               </div>
               <button
                 type="button"
                 className="trade-submit"
-                disabled={!programReady || !quotedOut || pending}
+                disabled={!programReady || !book || !quotedOut || pending || shortBalance}
                 onClick={onSwap}
               >
-                {pending ? "Confirm in wallet" : programReady ? (payingSol ? "Buy" : "Swap") : "Devnet program is not deployed yet"}
+                {actionLabel}
               </button>
               {programReady ? (
                 <button type="button" className="trade-faucet" disabled={pending || !book || claimed} onClick={onClaim}>
@@ -521,6 +620,17 @@ function ApplicationScreen() {
                 ) : null,
               )}
             </ul>
+          </section>
+        ) : null}
+
+        {(panel === "send" || panel === "receive") && ready && isConnected && address ? (
+          <WalletTransfer mode={panel} address={address} walletProvider={walletProvider} />
+        ) : null}
+        {(panel === "send" || panel === "receive") && ready && !isConnected ? (
+          <section className="trade" aria-label="Opening wallet">
+            <div className="trade-card">
+              <p className="transfer-note">Opening the wallet…</p>
+            </div>
           </section>
         ) : null}
 

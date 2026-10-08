@@ -1,4 +1,6 @@
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::instruction::{AccountMeta, Instruction};
+use anchor_lang::solana_program::program::invoke_signed;
 use anchor_lang::solana_program::program_option::COption;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount, Transfer};
@@ -9,16 +11,29 @@ use kuroshio_math::{
 
 declare_id!("2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox");
 
+// Bytes live in the section itself. A `&str` only stores a pointer, which Solscan does not follow.
+#[cfg(not(feature = "no-entrypoint"))]
+#[cfg_attr(
+    any(target_arch = "bpf", target_arch = "sbf"),
+    link_section = ".security.txt"
+)]
+#[allow(dead_code)]
+#[no_mangle]
+#[used]
+pub static SECURITY_TXT: [u8; 322] = *include_bytes!("security.txt");
+
 const FAUCET_WHOLE: u64 = 1_000;
 /// Whole book tokens minted for 1 SOL. Matches `TOKENS_PER_SOL` in the client.
 const TOKENS_PER_SOL: u128 = 100;
 const LAMPORTS_PER_SOL: u128 = 1_000_000_000;
 const MAX_BUY_LAMPORTS: u64 = 100 * 1_000_000_000;
+const TOKEN_METADATA_ID: Pubkey = pubkey!("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 
 #[program]
 pub mod kuroshio {
     use super::*;
 
+    /// Opens the shared book and records the four mints in ascending address order.
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
         let pool = &mut ctx.accounts.pool;
         let mints = [
@@ -78,6 +93,7 @@ pub mod kuroshio {
         Ok(())
     }
 
+    /// Mints the next liquidity band into the vaults. The eighth band opens trading.
     pub fn seed_band(ctx: Context<SeedBand>, index: u8) -> Result<()> {
         let pool = &mut ctx.accounts.pool;
         require!(!pool.trading_enabled, KuroshioError::AlreadySeeded);
@@ -139,6 +155,7 @@ pub mod kuroshio {
         Ok(())
     }
 
+    /// Swaps one book token for another on the shared sphere.
     pub fn swap(
         ctx: Context<Swap>,
         input_index: u8,
@@ -230,6 +247,7 @@ pub mod kuroshio {
         Ok(())
     }
 
+    /// Mints 1,000 whole tokens of one book asset. Each wallet can claim a mint once.
     pub fn faucet(ctx: Context<Faucet>, index: u8) -> Result<()> {
         let index = index as usize;
         require!(index < ASSETS, KuroshioError::BadVault);
@@ -270,6 +288,7 @@ pub mod kuroshio {
         Ok(())
     }
 
+    /// Buys a book token with SOL. One SOL mints 100 whole tokens, and the SOL does not enter the book.
     pub fn buy_with_sol(ctx: Context<BuyWithSol>, index: u8, lamports: u64) -> Result<()> {
         let index = index as usize;
         require!(index < ASSETS, KuroshioError::BadVault);
@@ -314,6 +333,57 @@ pub mod kuroshio {
         });
         Ok(())
     }
+
+    /// Publishes the name and symbol for one book mint. An image URI is optional.
+    pub fn attach_metadata(ctx: Context<AttachMetadata>, uri: String) -> Result<()> {
+        require!(ctx.accounts.pool.trading_enabled, KuroshioError::NotReady);
+        require!(valid_metadata_uri(&uri), KuroshioError::BadVault);
+        require!(ctx.accounts.metadata.data_is_empty(), KuroshioError::MetadataExists);
+        let (name, symbol) = book_token_meta(&ctx.accounts.mint.key()).ok_or(KuroshioError::BadVault)?;
+        require!(
+            ctx.accounts.mint.mint_authority == COption::Some(ctx.accounts.authority.key()),
+            KuroshioError::NotReady
+        );
+        let (metadata_address, _) = Pubkey::find_program_address(
+            &[
+                b"metadata",
+                TOKEN_METADATA_ID.as_ref(),
+                ctx.accounts.mint.key().as_ref(),
+            ],
+            &TOKEN_METADATA_ID,
+        );
+        require!(ctx.accounts.metadata.key() == metadata_address, KuroshioError::BadVault);
+
+        let bump = ctx.accounts.pool.authority_bump;
+        let accounts = vec![
+            AccountMeta::new(ctx.accounts.metadata.key(), false),
+            AccountMeta::new_readonly(ctx.accounts.mint.key(), false),
+            AccountMeta::new_readonly(ctx.accounts.authority.key(), true),
+            AccountMeta::new(ctx.accounts.admin.key(), true),
+            AccountMeta::new_readonly(ctx.accounts.admin.key(), false),
+            AccountMeta::new_readonly(ctx.accounts.system_program.key(), false),
+            AccountMeta::new_readonly(ctx.accounts.rent.key(), false),
+        ];
+        let instruction = Instruction {
+            program_id: TOKEN_METADATA_ID,
+            accounts,
+            data: metadata_instruction_data(name, symbol, &uri),
+        };
+        invoke_signed(
+            &instruction,
+            &[
+                ctx.accounts.metadata.to_account_info(),
+                ctx.accounts.mint.to_account_info(),
+                ctx.accounts.authority.to_account_info(),
+                ctx.accounts.admin.to_account_info(),
+                ctx.accounts.admin.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+                ctx.accounts.rent.to_account_info(),
+            ],
+            &[&[b"authority", &[bump]]],
+        )?;
+        Ok(())
+    }
 }
 
 fn load_book(pool: &Pool) -> Result<Book> {
@@ -351,6 +421,43 @@ fn tokens_for_sol(lamports: u64, decimals: u8) -> Result<u64> {
     let amount = u64::try_from(scaled / LAMPORTS_PER_SOL).map_err(|_| KuroshioError::Math)?;
     require!(amount > 0, KuroshioError::TooSmall);
     Ok(amount)
+}
+
+fn book_token_meta(mint: &Pubkey) -> Option<(&'static str, &'static str)> {
+    const TABLE: [(Pubkey, &str, &str); 4] = [
+        (pubkey!("7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk"), "Kuroshio FRAX", "kFRAX"),
+        (pubkey!("8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp"), "Kuroshio USDC", "kUSDC"),
+        (pubkey!("DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp"), "Kuroshio DAI", "kDAI"),
+        (pubkey!("HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6"), "Kuroshio USDT", "kUSDT"),
+    ];
+    TABLE.iter().find(|(key, _, _)| key == mint).map(|(_, name, symbol)| (*name, *symbol))
+}
+
+fn valid_metadata_uri(uri: &str) -> bool {
+    if uri.is_empty() {
+        return true;
+    }
+    uri.len() <= 200
+        && uri.is_ascii()
+        && !uri.chars().any(|c| c.is_ascii_whitespace())
+        && (uri.starts_with("https://") || uri.starts_with("http://"))
+}
+
+fn push_borsh_str(data: &mut Vec<u8>, value: &str) {
+    let bytes = value.as_bytes();
+    data.extend_from_slice(&(bytes.len() as u32).to_le_bytes());
+    data.extend_from_slice(bytes);
+}
+
+fn metadata_instruction_data(name: &str, symbol: &str, uri: &str) -> Vec<u8> {
+    let mut data = Vec::with_capacity(16 + name.len() + symbol.len() + uri.len());
+    data.push(33);
+    push_borsh_str(&mut data, name);
+    push_borsh_str(&mut data, symbol);
+    push_borsh_str(&mut data, uri);
+    data.extend_from_slice(&0u16.to_le_bytes());
+    data.extend_from_slice(&[0, 0, 0, 1, 0]);
+    data
 }
 
 fn map_math<T>(result: std::result::Result<T, MathError>) -> Result<T> {
@@ -499,6 +606,26 @@ pub struct BuyWithSol<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct AttachMetadata<'info> {
+    #[account(mut, address = pool.admin)]
+    pub admin: Signer<'info>,
+    #[account(seeds = [b"pool"], bump = pool.bump)]
+    pub pool: Box<Account<'info, Pool>>,
+    /// CHECK: mint authority after seeding.
+    #[account(seeds = [b"authority"], bump = pool.authority_bump)]
+    pub authority: UncheckedAccount<'info>,
+    pub mint: Account<'info, Mint>,
+    /// CHECK: Metaplex metadata account, created by the metadata program.
+    #[account(mut)]
+    pub metadata: UncheckedAccount<'info>,
+    /// CHECK: Metaplex token metadata program.
+    #[account(address = TOKEN_METADATA_ID)]
+    pub metadata_program: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+    pub rent: Sysvar<'info, Rent>,
+}
+
 #[account]
 pub struct Pool {
     pub bump: u8,
@@ -584,4 +711,6 @@ pub enum KuroshioError {
     TooSmall,
     #[msg("One buy can spend at most 100 SOL")]
     TooLarge,
+    #[msg("This token already has metadata")]
+    MetadataExists,
 }

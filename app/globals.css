@@ -887,6 +887,7 @@ th {
 .trade-side input,
 .trade-side output {
   width: 100%;
+  min-width: 0;
   border: 0;
   background: transparent;
   color: white;
@@ -894,6 +895,36 @@ th {
   line-height: 1;
   padding: 0;
   font-variant-numeric: tabular-nums;
+}
+
+.pay-amount {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.85rem;
+}
+
+.pay-max {
+  display: grid;
+  justify-items: end;
+  gap: 0.45rem;
+  padding-bottom: 0.15rem;
+}
+
+.max-button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1c1c1c;
+  color: white;
+  border-radius: 999px;
+  padding: 0.42rem 1.05rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1.1;
+}
+
+.max-button:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .trade-side input:focus {
@@ -920,6 +951,22 @@ th {
 
 .token-pill {
   position: relative;
+}
+
+.token-choice {
+  display: grid;
+  justify-items: end;
+  gap: 0.28rem;
+}
+
+.token-balance {
+  margin: 0;
+  padding: 0;
+  color: #8d8d8d;
+  font-size: 0.82rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .token-pill > button,
@@ -957,9 +1004,111 @@ th {
   font-weight: 700;
 }
 
+img.token-mark {
+  object-fit: cover;
+  background: #0c0c0c;
+}
+
 .mark-SOL {
   font-size: 0.48rem;
   letter-spacing: -0.03em;
+}
+
+.wallet-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.wallet-field span {
+  color: #9a9a9a;
+  font-size: 0.92rem;
+}
+
+.wallet-field input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.85rem;
+  background: #0c0c0c;
+  color: white;
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 0.8rem 0.9rem;
+}
+
+.wallet-field input:focus {
+  outline: 1px solid rgba(26, 166, 160, 0.7);
+}
+
+.transfer-note,
+.receive-card > p {
+  margin: 0;
+  color: #8d8d8d;
+  font-size: 0.92rem;
+}
+
+.receive-card h2 {
+  margin: 0.35rem 0 0;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.receive-qr {
+  display: grid;
+  justify-items: center;
+  gap: 0.95rem;
+  margin-top: 0.35rem;
+  padding: 0.85rem 0.85rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.15rem;
+  background: #0c0c0c;
+}
+
+.receive-qr-frame {
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: white;
+}
+
+.receive-qr-frame svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.receive-qr-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.receive-qr-meta strong {
+  display: block;
+  color: white;
+  font-size: 1.05rem;
+}
+
+.receive-qr-meta .token-mark,
+.receive-qr-meta img {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.receive-short {
+  margin: 0.2rem 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8d8d8d;
+  font: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
 }
 
 .trade-submit,

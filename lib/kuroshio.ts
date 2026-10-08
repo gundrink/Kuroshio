@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import {
   Connection,
   PublicKey,
@@ -8,11 +9,19 @@ import {
 } from "@solana/web3.js";
 import { publicEnv } from "@/lib/env";
 
+if (typeof globalThis.Buffer === "undefined") {
+  globalThis.Buffer = Buffer;
+}
+
 export const PROGRAM_ID = new PublicKey(
   publicEnv.programId || "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox",
 );
 export const TOKEN_PROGRAM_ID = new PublicKey(publicEnv.splTokenProgram);
 export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(publicEnv.associatedTokenProgram);
+const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+export const WRAPPED_SOL_MINT = new PublicKey("So11111111111111111111111111111111111111112");
+const SOL_MINT_LOGO =
+  "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png";
 
 const BPS = 10_000n;
 const FEE_BPS = 1n;
@@ -27,6 +36,8 @@ const DISC = {
 
 export const TOKENS_PER_SOL = 100n;
 export const LAMPORTS_PER_SOL = 1_000_000_000n;
+/** Left on the sender so the account stays rent-exempt and the network fee can be paid. */
+export const SOL_FEE_RESERVE = 890_880n + 10_000n;
 
 export type BookBand = {
   priceBps: number;
@@ -123,6 +134,51 @@ export async function fetchBook(connection: Connection) {
   return decodeBook(info.data);
 }
 
+function readBorshString(data: Buffer, offset: number) {
+  const length = data.readUInt32LE(offset);
+  const text = data.subarray(offset + 4, offset + 4 + length).toString("utf8").replace(/\0+$/, "");
+  return { text, next: offset + 4 + length };
+}
+
+export function metadataAddress(mint: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("metadata"), METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    METADATA_PROGRAM_ID,
+  )[0];
+}
+
+export async function fetchTokenImage(connection: Connection, mint: PublicKey) {
+  const info = await connection.getAccountInfo(metadataAddress(mint));
+  if (!info) return null;
+  const view = Buffer.from(info.data);
+  let offset = 1 + 32 + 32;
+  offset = readBorshString(view, offset).next;
+  offset = readBorshString(view, offset).next;
+  const uri = readBorshString(view, offset).text.trim();
+  if (!uri.startsWith("https://")) return null;
+  const response = await fetch(uri);
+  if (!response.ok) return null;
+  const body = (await response.json()) as { image?: unknown };
+  return typeof body.image === "string" && body.image.startsWith("https://") ? body.image : null;
+}
+
+export async function fetchSolImage(connection: Connection) {
+  const onDevnet = await fetchTokenImage(connection, WRAPPED_SOL_MINT);
+  if (onDevnet) return onDevnet;
+  const onMainnet = await fetchTokenImage(
+    new Connection("https://api.mainnet-beta.solana.com", "confirmed"),
+    WRAPPED_SOL_MINT,
+  );
+  return onMainnet ?? SOL_MINT_LOGO;
+}
+
+export async function fetchOwnerBalance(connection: Connection, owner: PublicKey, mint: PublicKey | null) {
+  if (!mint) return BigInt(await connection.getBalance(owner));
+  const info = await connection.getAccountInfo(associatedTokenAddress(mint, owner));
+  if (!info) return 0n;
+  return Buffer.from(info.data).readBigUInt64LE(64);
+}
+
 export function quoteExactIn(book: OnchainBook, input: number, output: number, grossIn: bigint): SwapQuote {
   if (input === output) throw new Error("Pay and receive must be different tokens");
   if (grossIn <= 0n) throw new Error("Enter an amount");
@@ -156,6 +212,58 @@ export function swapTransaction(args: {
   data.writeBigInt64LE(args.deadline, 26);
   data.writeUInt8(1, 34);
   return instruction(data, swapMetas(args.user, args.book, args.input, args.output));
+}
+
+export function transferTransaction(args: {
+  from: PublicKey;
+  to: PublicKey;
+  mint: PublicKey | null;
+  amount: bigint;
+}) {
+  if (args.from.equals(args.to)) throw new Error("Choose a different wallet.");
+  if (args.amount <= 0n) throw new Error("Enter an amount.");
+  const transaction = new Transaction();
+  if (!args.mint) {
+    transaction.add(
+      SystemProgram.transfer({
+        fromPubkey: args.from,
+        toPubkey: args.to,
+        lamports: args.amount,
+      }),
+    );
+    return transaction;
+  }
+  const source = associatedTokenAddress(args.mint, args.from);
+  const destination = associatedTokenAddress(args.mint, args.to);
+  transaction.add(
+    new TransactionInstruction({
+      programId: ASSOCIATED_TOKEN_PROGRAM_ID,
+      data: Buffer.from([1]),
+      keys: [
+        { pubkey: args.from, isSigner: true, isWritable: true },
+        { pubkey: destination, isSigner: false, isWritable: true },
+        { pubkey: args.to, isSigner: false, isWritable: false },
+        { pubkey: args.mint, isSigner: false, isWritable: false },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+      ],
+    }),
+  );
+  const data = Buffer.alloc(9);
+  data.writeUInt8(3, 0);
+  data.writeBigUInt64LE(args.amount, 1);
+  transaction.add(
+    new TransactionInstruction({
+      programId: TOKEN_PROGRAM_ID,
+      data,
+      keys: [
+        { pubkey: source, isSigner: false, isWritable: true },
+        { pubkey: destination, isSigner: false, isWritable: true },
+        { pubkey: args.from, isSigner: true, isWritable: false },
+      ],
+    }),
+  );
+  return transaction;
 }
 
 export function faucetTransaction(user: PublicKey, book: OnchainBook) {

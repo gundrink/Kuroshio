@@ -1,9 +1,14 @@
 "use client";
 
+import { Buffer } from "buffer";
 import { createAppKit, type CreateAppKit } from "@reown/appkit/react";
 import { SolanaAdapter } from "@reown/appkit-adapter-solana/react";
 import { solanaDevnet } from "@reown/appkit/networks";
 import { publicEnv } from "@/lib/env";
+
+if (typeof globalThis.Buffer === "undefined") {
+  globalThis.Buffer = Buffer;
+}
 
 const solanaAdapter = new SolanaAdapter();
 const origin = typeof window === "undefined" ? publicEnv.appUrl : window.location.origin;

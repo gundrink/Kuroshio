@@ -1,0 +1,89 @@
+import fs from "node:fs";
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
+
+const RPC = "https://api.devnet.solana.com";
+const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+const TOKENS = [
+  ["kFRAX", "Kuroshio FRAX", "7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk"],
+  ["kUSDC", "Kuroshio USDC", "8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp"],
+  ["kDAI", "Kuroshio DAI", "DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp"],
+  ["kUSDT", "Kuroshio USDT", "HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6"],
+];
+
+const deployer = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync("keys/deployer.json", "utf8"))));
+const connection = new Connection(RPC, "confirmed");
+
+function metadataAddress(mint) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("metadata"), METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    METADATA_PROGRAM_ID,
+  )[0];
+}
+
+function pushStr(data, value) {
+  const bytes = Buffer.from(value, "utf8");
+  const length = Buffer.alloc(4);
+  length.writeUInt32LE(bytes.length);
+  data.push(length, bytes);
+}
+
+function updateData(name, symbol, uri) {
+  const parts = [Buffer.from([15, 1])];
+  pushStr(parts, name);
+  pushStr(parts, symbol);
+  pushStr(parts, uri);
+  parts.push(Buffer.alloc(8));
+  return Buffer.concat(parts);
+}
+
+async function upload(filename, bytes, type) {
+  const body = new FormData();
+  body.append("reqtype", "fileupload");
+  body.append("fileToUpload", new Blob([bytes], { type }), filename);
+  const response = await fetch("https://catbox.moe/user/api.php", { method: "POST", body });
+  const url = (await response.text()).trim();
+  if (!url.startsWith("https://")) throw new Error(`Upload failed for ${filename}: ${url}`);
+  return url;
+}
+
+const logo = fs.readFileSync("public/logo.png");
+const imageUrl = await upload("logo.png", logo, "image/png");
+console.log("image", imageUrl);
+
+for (const [symbol, name, mintAddress] of TOKENS) {
+  const json = {
+    name,
+    symbol,
+    description: "Kuroshio book token on Solana devnet.",
+    image: imageUrl,
+  };
+  fs.writeFileSync(`public/tokens/${symbol.toLowerCase()}.json`, `${JSON.stringify(json, null, 2)}\n`);
+  const uri = await upload(`${symbol.toLowerCase()}.json`, Buffer.from(JSON.stringify(json)), "application/json");
+  const mint = new PublicKey(mintAddress);
+  const metadata = metadataAddress(mint);
+  const info = await connection.getAccountInfo(metadata);
+  if (!info) throw new Error(`${symbol} has no metadata account`);
+  const authority = new PublicKey(info.data.subarray(1, 33));
+  if (!authority.equals(deployer.publicKey)) {
+    throw new Error(`${symbol} update authority is ${authority.toBase58()}`);
+  }
+  const instruction = new TransactionInstruction({
+    programId: METADATA_PROGRAM_ID,
+    data: updateData(name, symbol, uri),
+    keys: [
+      { pubkey: metadata, isSigner: false, isWritable: true },
+      { pubkey: deployer.publicKey, isSigner: true, isWritable: false },
+    ],
+  });
+  const signature = await sendAndConfirmTransaction(connection, new Transaction().add(instruction), [deployer], {
+    commitment: "confirmed",
+  });
+  console.log(symbol, signature, uri);
+}

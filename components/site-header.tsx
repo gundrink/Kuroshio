@@ -3,7 +3,7 @@ import { HeaderMarks } from "@/components/header-marks";
 import { SectionNav } from "@/components/section-nav";
 import { publicEnv } from "@/lib/env";
 
-type Panel = "swap" | "book" | "bands";
+type Panel = "swap" | "send" | "receive" | "book" | "bands";
 
 export function SiteHeader({
   current,
@@ -15,6 +15,8 @@ export function SiteHeader({
   swapHref?: string;
 }) {
   const inApp = current === "app" || current === "connect";
+  const locked = swapHref === "/connect";
+  const hrefFor = (name: Panel) => (locked ? "/connect" : `/app?panel=${name}`);
 
   return (
     <header className="site-header">
@@ -35,8 +37,14 @@ export function SiteHeader({
         ) : null}
         {inApp ? (
           <>
-            <Link href={swapHref} aria-current={current === "app" && panel === "swap" ? "page" : undefined}>
+            <Link href={hrefFor("swap")} aria-current={current === "app" && panel === "swap" ? "page" : undefined}>
               Swap
+            </Link>
+            <Link href={hrefFor("send")} aria-current={panel === "send" ? "page" : undefined}>
+              Send
+            </Link>
+            <Link href={hrefFor("receive")} aria-current={panel === "receive" ? "page" : undefined}>
+              Receive
             </Link>
             <Link href="/app?panel=book" aria-current={panel === "book" ? "page" : undefined}>
               Book

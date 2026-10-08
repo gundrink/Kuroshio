@@ -20,5 +20,6 @@ idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 anchor-lang = { version = "0.30.1", features = ["init-if-needed"] }
 anchor-spl = "0.30.1"
 kuroshio-math = { path = "../../crates/kuroshio-math" }
+solana-security-txt = "1.1.1"
 # 1.8 pulls digest 0.11, which the Solana 1.75 BPF compiler cannot build.
 blake3 = "=1.5.5"

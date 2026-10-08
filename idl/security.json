@@ -1,0 +1,15 @@
+{
+  "name": "Kuroshio",
+  "logo": "https://files.catbox.moe/i9fisz.png",
+  "description": "A shared stablecoin book on Solana. kUSDC, kUSDT, kDAI, and kFRAX trade from one reserve vector. A crossed depeg band stops quoting.",
+  "project_url": "https://github.com/gundrink/Kuroshio",
+  "contacts": ["link:https://github.com/gundrink/Kuroshio"],
+  "policy": "https://github.com/gundrink/Kuroshio/blob/main/SECURITY.md",
+  "preferred_languages": ["en"],
+  "source_code": "https://github.com/gundrink/Kuroshio",
+  "source_release": "v0.1.0",
+  "auditors": [],
+  "expiry": "2027-10-08",
+  "version": "0.1.0",
+  "sdk": "https://github.com/gundrink/Kuroshio"
+}
