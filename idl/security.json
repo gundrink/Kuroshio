@@ -8,6 +8,7 @@
   "preferred_languages": ["en"],
   "source_code": "https://github.com/gundrink/Kuroshio",
   "source_release": "v0.1.0",
+  "source_revision": "3ac185b15ef4926653fb8a65c4095b0dc6aa61d6",
   "auditors": [],
   "expiry": "2027-10-08",
   "version": "0.1.0",
