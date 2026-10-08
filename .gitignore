@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Solana program build and local deployer key
+keys/
+target/
+.anchor/
+test-ledger/

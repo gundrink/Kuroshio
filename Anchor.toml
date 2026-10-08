@@ -1,0 +1,18 @@
+[toolchain]
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+kuroshio = "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox"
+
+[programs.devnet]
+kuroshio = "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox"
+
+[provider]
+cluster = "devnet"
+wallet = "keys/deployer.json"
+
+[scripts]
+test = "cargo test -p kuroshio-math"

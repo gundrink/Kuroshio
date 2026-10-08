@@ -1,0 +1,20 @@
+{
+  "cluster": "devnet",
+  "programId": "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox",
+  "pool": "8ribZ2EAvQVN1kppxXd9EfVPaTufV8D7pbpnNucdWvg",
+  "authority": "2v6Agxq87QcJ6rs9j8ZyU7hkphH1yYRSMTd7wZmHi4iy",
+  "deployer": "DCYGieAFCYNvmNRDj3Aoi4qTpZAVC4RsKbGUqDn4RJdp",
+  "mints": {
+    "kFRAX": "7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk",
+    "kUSDC": "8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp",
+    "kDAI": "DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp",
+    "kUSDT": "HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6"
+  },
+  "vaults": {
+    "kFRAX": "DoGhvx1uBexXNnts5Trxh8qKpgpp9j8k4uWA8ur3m8m1",
+    "kUSDC": "DtxmU7chWYzk1oxMsniJBCKZGZTwJ1h8cXMtCbDMJQUh",
+    "kDAI": "GchYn3GowWvdqdPZqj8GK1aAMxnJjAtJVKvDaHyAoHJ",
+    "kUSDT": "75LjvtLfenYkkrD2FpMkxS1fE7s9QyGHLpiwEjVKL7jm"
+  },
+  "swap": "a7vFHh9wJ9pNKMfPMHVJq1TkP1xzzr9TGRgEYdEpmu5JHGYw79okvbSUuy4rjWDSVJ3kRrqQN4AjYEcX91WA5UZ"
+}

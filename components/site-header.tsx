@@ -1,0 +1,52 @@
+import Link from "next/link";
+import { HeaderMarks } from "@/components/header-marks";
+import { SectionNav } from "@/components/section-nav";
+import { publicEnv } from "@/lib/env";
+
+type Panel = "swap" | "book" | "bands";
+
+export function SiteHeader({
+  current,
+  panel,
+  swapHref = "/app?panel=swap",
+}: {
+  current: "home" | "app" | "connect";
+  panel?: Panel;
+  swapHref?: string;
+}) {
+  const inApp = current === "app" || current === "connect";
+
+  return (
+    <header className="site-header">
+      <div className="brand-cluster">
+        <Link href="/" className="wordmark">
+          <img src="/logo-text.png" alt="Kuroshio" />
+        </Link>
+        <HeaderMarks xUrl={publicEnv.xUrl} ca={publicEnv.ca} />
+      </div>
+      <nav className="site-nav">
+        {current === "home" ? (
+          <>
+            <SectionNav />
+            <Link className="launch-link" href="/connect">
+              Launch app
+            </Link>
+          </>
+        ) : null}
+        {inApp ? (
+          <>
+            <Link href={swapHref} aria-current={current === "app" && panel === "swap" ? "page" : undefined}>
+              Swap
+            </Link>
+            <Link href="/app?panel=book" aria-current={panel === "book" ? "page" : undefined}>
+              Book
+            </Link>
+            <Link href="/app?panel=bands" aria-current={panel === "bands" ? "page" : undefined}>
+              Bands
+            </Link>
+          </>
+        ) : null}
+      </nav>
+    </header>
+  );
+}
