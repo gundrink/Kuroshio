@@ -2,5 +2,5 @@
   "name": "Pool Ninja USDC",
   "symbol": "nUSDC",
   "description": "Pool Ninja book token on Solana devnet.",
-  "image": "https://files.catbox.moe/ibgzpv.png"
+  "image": "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/logo-ninja.png"
 }

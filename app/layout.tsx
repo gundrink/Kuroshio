@@ -17,7 +17,7 @@ const display = Syne({
 export const metadata: Metadata = {
   title: "Pool Ninja",
   description: "Four devnet stablecoins. One reserve. Pool Ninja.",
-  icons: { icon: "/ninja-face.png" },
+  icons: { icon: "/logo-ninja.png", apple: "/logo-ninja.png" },
   robots: { index: false, follow: false },
 };
 

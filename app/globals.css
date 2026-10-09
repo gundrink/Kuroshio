@@ -124,9 +124,20 @@ a {
 
 .brand-logo {
   display: block;
-  height: 2.2rem;
-  width: auto;
+  height: 2.15rem;
+  width: 2.15rem;
   flex: none;
+  object-fit: contain;
+  mix-blend-mode: screen;
+}
+
+.brand-word {
+  display: block;
+  height: 2.15rem;
+  width: 5.15rem;
+  flex: none;
+  object-fit: cover;
+  object-position: right center;
 }
 
 .site-nav {
@@ -1504,9 +1515,10 @@ img.token-mark {
 
 .connect-mark {
   display: block;
-  width: min(16rem, 70%);
+  width: min(7.5rem, 46%);
   height: auto;
   margin: 0 auto 1.15rem;
+  mix-blend-mode: screen;
 }
 
 .connect-kicker {
@@ -1607,6 +1619,167 @@ img.token-mark {
   width: 160px;
   height: 96px;
   margin: 1.4rem auto 0;
+}
+
+.trade.ledger {
+  width: min(100%, 640px);
+}
+
+.ledger-card {
+  padding: 1.35rem 1.2rem 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.3rem;
+  background: #121212;
+}
+
+.ledger-kicker {
+  display: inline-flex;
+  margin: 0 0 0.85rem;
+  padding: 0.28rem 0.72rem;
+  border: 1px solid rgba(200, 16, 46, 0.5);
+  border-radius: 999px;
+  color: #ffb4be;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ledger-card h2 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 2.4rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.ledger-lead,
+.ledger-now,
+.ledger-note,
+.ledger-message,
+.slice p {
+  margin: 0.75rem 0 0;
+  color: #a3a3a3;
+  line-height: 1.55;
+}
+
+.ledger-now {
+  color: #d7d7d7;
+}
+
+.coin-ledger,
+.slice-list,
+.slice-reserves {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.coin-ledger {
+  margin-top: 0.4rem;
+}
+
+.coin-ledger li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.coin-ledger strong,
+.slice-reserves strong,
+.slice header strong {
+  display: block;
+  color: white;
+}
+
+.coin-ledger span,
+.slice header span,
+.slice-reserves span {
+  color: #8d8d8d;
+  font-size: 0.84rem;
+}
+
+.coin-amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.slice-list {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.slice {
+  padding: 0.9rem 0.95rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  background: #0c0c0c;
+}
+
+.slice header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+}
+
+.slice header strong {
+  font-size: 1.15rem;
+}
+
+.slice-state {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.slice-state.is-quoting {
+  color: #ffb4be;
+}
+
+.slice-state.is-stopped {
+  color: #8d8d8d;
+}
+
+.slice-state.is-steady {
+  color: white;
+}
+
+.slice-reserves {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.slice-reserves strong {
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-note {
+  margin-top: 1rem;
+  font-size: 0.92rem;
+}
+
+.ledger-link {
+  display: inline-flex;
+  margin-top: 0.85rem;
+  color: #ffb4be;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .slice-reserves {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @keyframes ticker {

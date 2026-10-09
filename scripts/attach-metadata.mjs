@@ -16,10 +16,10 @@ const PROGRAM_ID = new PublicKey("GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE")
 const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 
 const MINTS = [
-  ["nUSDe", "AtKin6p4ecibN42YPBN1gdgBwwU69cWqdWewj7x4tphR", "https://files.catbox.moe/5wo77b.json"],
-  ["nUSDC", "AogEbswqviQNztUJJZziERHt2SbZMEFBqxj7wQfQLyg5", "https://files.catbox.moe/9grs3i.json"],
-  ["nPYUSD", "6EVpJryaSzY29qyJQwWQbMt8AbtBSQrZcMkAdHMMbZMn", "https://files.catbox.moe/wm2e92.json"],
-  ["nUSDT", "FNEBoyu8SpihwkA5ApDii13MHwK1scKmrGsefXPkC1ru", "https://files.catbox.moe/zni7lw.json"],
+  ["nUSDe", "AtKin6p4ecibN42YPBN1gdgBwwU69cWqdWewj7x4tphR", "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/tokens/kfrax.json"],
+  ["nUSDC", "AogEbswqviQNztUJJZziERHt2SbZMEFBqxj7wQfQLyg5", "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/tokens/kusdc.json"],
+  ["nPYUSD", "6EVpJryaSzY29qyJQwWQbMt8AbtBSQrZcMkAdHMMbZMn", "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/tokens/kdai.json"],
+  ["nUSDT", "FNEBoyu8SpihwkA5ApDii13MHwK1scKmrGsefXPkC1ru", "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/tokens/kusdt.json"],
 ];
 
 const deployer = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync("keys/deployer.json", "utf8"))));

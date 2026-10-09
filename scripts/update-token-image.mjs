@@ -43,18 +43,7 @@ function updateData(name, symbol, uri) {
   return Buffer.concat(parts);
 }
 
-async function upload(filename, bytes, type) {
-  const body = new FormData();
-  body.append("reqtype", "fileupload");
-  body.append("fileToUpload", new Blob([bytes], { type }), filename);
-  const response = await fetch("https://catbox.moe/user/api.php", { method: "POST", body });
-  const url = (await response.text()).trim();
-  if (!url.startsWith("https://")) throw new Error(`Upload failed for ${filename}: ${url}`);
-  return url;
-}
-
-const logo = fs.readFileSync("public/logo.png");
-const imageUrl = await upload("logo.png", logo, "image/png");
+const imageUrl = "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/logo-ninja.png";
 console.log("image", imageUrl);
 
 for (const [symbol, name, mintAddress, file] of TOKENS) {
@@ -65,7 +54,7 @@ for (const [symbol, name, mintAddress, file] of TOKENS) {
     image: imageUrl,
   };
   fs.writeFileSync(`public/tokens/${file}.json`, `${JSON.stringify(json, null, 2)}\n`);
-  const uri = await upload(`${file}.json`, Buffer.from(JSON.stringify(json)), "application/json");
+  const uri = `https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/tokens/${file}.json`;
   const mint = new PublicKey(mintAddress);
   const metadata = metadataAddress(mint);
   const info = await connection.getAccountInfo(metadata);

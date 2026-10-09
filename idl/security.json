@@ -1,6 +1,6 @@
 {
   "name": "Pool Ninja",
-  "logo": "https://files.catbox.moe/ibgzpv.png",
+  "logo": "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/logo-ninja.png",
   "description": "A shared stablecoin book on Solana. nUSDC, nUSDT, nPYUSD, nUSDe, nEURC, nFDUSD, nGHO, and nUSDS trade from one reserve vector. A crossed depeg band stops quoting.",
   "project_url": "https://github.com/gundrink/pool-ninja",
   "contacts": ["link:https://github.com/gundrink/pool-ninja"],
