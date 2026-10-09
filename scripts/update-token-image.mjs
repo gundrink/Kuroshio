@@ -11,10 +11,10 @@ import {
 const RPC = "https://api.devnet.solana.com";
 const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 const TOKENS = [
-  ["kFRAX", "Kuroshio FRAX", "7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk"],
-  ["kUSDC", "Kuroshio USDC", "8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp"],
-  ["kDAI", "Kuroshio DAI", "DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp"],
-  ["kUSDT", "Kuroshio USDT", "HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6"],
+  ["nUSDe", "Pool Ninja USDe", "AtKin6p4ecibN42YPBN1gdgBwwU69cWqdWewj7x4tphR", "kfrax"],
+  ["nUSDC", "Pool Ninja USDC", "AogEbswqviQNztUJJZziERHt2SbZMEFBqxj7wQfQLyg5", "kusdc"],
+  ["nPYUSD", "Pool Ninja PYUSD", "6EVpJryaSzY29qyJQwWQbMt8AbtBSQrZcMkAdHMMbZMn", "kdai"],
+  ["nUSDT", "Pool Ninja USDT", "FNEBoyu8SpihwkA5ApDii13MHwK1scKmrGsefXPkC1ru", "kusdt"],
 ];
 
 const deployer = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync("keys/deployer.json", "utf8"))));
@@ -57,15 +57,15 @@ const logo = fs.readFileSync("public/logo.png");
 const imageUrl = await upload("logo.png", logo, "image/png");
 console.log("image", imageUrl);
 
-for (const [symbol, name, mintAddress] of TOKENS) {
+for (const [symbol, name, mintAddress, file] of TOKENS) {
   const json = {
     name,
     symbol,
-    description: "Kuroshio book token on Solana devnet.",
+    description: "Pool Ninja book token on Solana devnet.",
     image: imageUrl,
   };
-  fs.writeFileSync(`public/tokens/${symbol.toLowerCase()}.json`, `${JSON.stringify(json, null, 2)}\n`);
-  const uri = await upload(`${symbol.toLowerCase()}.json`, Buffer.from(JSON.stringify(json)), "application/json");
+  fs.writeFileSync(`public/tokens/${file}.json`, `${JSON.stringify(json, null, 2)}\n`);
+  const uri = await upload(`${file}.json`, Buffer.from(JSON.stringify(json)), "application/json");
   const mint = new PublicKey(mintAddress);
   const metadata = metadataAddress(mint);
   const info = await connection.getAccountInfo(metadata);

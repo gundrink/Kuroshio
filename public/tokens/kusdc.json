@@ -1,6 +1,6 @@
 {
-  "name": "Kuroshio USDC",
-  "symbol": "kUSDC",
-  "description": "Kuroshio book token on Solana devnet.",
-  "image": "https://files.catbox.moe/i9fisz.png"
+  "name": "Pool Ninja USDC",
+  "symbol": "nUSDC",
+  "description": "Pool Ninja book token on Solana devnet.",
+  "image": "https://files.catbox.moe/ibgzpv.png"
 }

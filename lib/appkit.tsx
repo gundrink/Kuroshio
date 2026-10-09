@@ -21,10 +21,10 @@ createAppKit({
   defaultNetwork: solanaDevnet,
   projectId: publicEnv.reownProjectId,
   metadata: {
-    name: "Kuroshio",
+    name: "Pool Ninja",
     description: "One book for every stablecoin on Solana devnet.",
     url: origin,
-    icons: [`${origin}/icon`],
+    icons: [`${origin}/ninja-face.png`],
   },
   features: {
     analytics: false,
@@ -33,8 +33,8 @@ createAppKit({
   },
   themeMode: "dark",
   themeVariables: {
-    "--w3m-accent": "#d7a15a",
-    "--w3m-color-mix": "#102028",
+    "--w3m-accent": "#c8102e",
+    "--w3m-color-mix": "#14080a",
     "--w3m-color-mix-strength": 20,
   },
   basic: true,

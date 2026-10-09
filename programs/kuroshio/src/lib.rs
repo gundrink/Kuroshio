@@ -9,7 +9,7 @@ use kuroshio_math::{
     MathError, ASSETS, BANDS,
 };
 
-declare_id!("2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox");
+declare_id!("GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE");
 
 // Bytes live in the section itself. A `&str` only stores a pointer, which Solscan does not follow.
 #[cfg(not(feature = "no-entrypoint"))]
@@ -20,7 +20,7 @@ declare_id!("2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox");
 #[allow(dead_code)]
 #[no_mangle]
 #[used]
-pub static SECURITY_TXT: [u8; 322] = *include_bytes!("security.txt");
+pub static SECURITY_TXT: [u8; 332] = *include_bytes!("security.txt");
 
 const FAUCET_WHOLE: u64 = 1_000;
 /// Whole book tokens minted for 1 SOL. Matches `TOKENS_PER_SOL` in the client.
@@ -425,10 +425,10 @@ fn tokens_for_sol(lamports: u64, decimals: u8) -> Result<u64> {
 
 fn book_token_meta(mint: &Pubkey) -> Option<(&'static str, &'static str)> {
     const TABLE: [(Pubkey, &str, &str); 4] = [
-        (pubkey!("7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk"), "Kuroshio FRAX", "kFRAX"),
-        (pubkey!("8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp"), "Kuroshio USDC", "kUSDC"),
-        (pubkey!("DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp"), "Kuroshio DAI", "kDAI"),
-        (pubkey!("HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6"), "Kuroshio USDT", "kUSDT"),
+        (pubkey!("AtKin6p4ecibN42YPBN1gdgBwwU69cWqdWewj7x4tphR"), "Pool Ninja USDe", "nUSDe"),
+        (pubkey!("AogEbswqviQNztUJJZziERHt2SbZMEFBqxj7wQfQLyg5"), "Pool Ninja USDC", "nUSDC"),
+        (pubkey!("6EVpJryaSzY29qyJQwWQbMt8AbtBSQrZcMkAdHMMbZMn"), "Pool Ninja PYUSD", "nPYUSD"),
+        (pubkey!("FNEBoyu8SpihwkA5ApDii13MHwK1scKmrGsefXPkC1ru"), "Pool Ninja USDT", "nUSDT"),
     ];
     TABLE.iter().find(|(key, _, _)| key == mint).map(|(_, name, symbol)| (*name, *symbol))
 }

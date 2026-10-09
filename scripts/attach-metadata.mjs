@@ -12,14 +12,14 @@ import {
 } from "@solana/web3.js";
 
 const RPC = "https://api.devnet.solana.com";
-const PROGRAM_ID = new PublicKey("2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox");
+const PROGRAM_ID = new PublicKey("GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE");
 const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 
 const MINTS = [
-  ["kFRAX", "7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk"],
-  ["kUSDC", "8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp"],
-  ["kDAI", "DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp"],
-  ["kUSDT", "HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6"],
+  ["nUSDe", "AtKin6p4ecibN42YPBN1gdgBwwU69cWqdWewj7x4tphR", "https://files.catbox.moe/5wo77b.json"],
+  ["nUSDC", "AogEbswqviQNztUJJZziERHt2SbZMEFBqxj7wQfQLyg5", "https://files.catbox.moe/9grs3i.json"],
+  ["nPYUSD", "6EVpJryaSzY29qyJQwWQbMt8AbtBSQrZcMkAdHMMbZMn", "https://files.catbox.moe/wm2e92.json"],
+  ["nUSDT", "FNEBoyu8SpihwkA5ApDii13MHwK1scKmrGsefXPkC1ru", "https://files.catbox.moe/zni7lw.json"],
 ];
 
 const deployer = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync("keys/deployer.json", "utf8"))));
@@ -45,17 +45,7 @@ function metadataAddress(mint) {
   )[0];
 }
 
-function metadataUri() {
-  const env = fs.readFileSync(".env.local", "utf8");
-  const match = env.match(/^NEXT_PUBLIC_APP_URL=(.*)$/m);
-  const url = (match?.[1] ?? "").trim().replace(/\/$/, "");
-  if (!url.startsWith("https://")) return "";
-  return url;
-}
-
-const uriBase = metadataUri();
-
-for (const [symbol, address] of MINTS) {
+for (const [symbol, address, uri] of MINTS) {
   const mint = new PublicKey(address);
   const metadata = metadataAddress(mint);
   const existing = await connection.getAccountInfo(metadata);
@@ -63,7 +53,6 @@ for (const [symbol, address] of MINTS) {
     console.log(symbol, "already has metadata", metadata.toBase58());
     continue;
   }
-  const uri = uriBase ? `${uriBase}/tokens/${symbol.toLowerCase()}.json` : "";
   const data = Buffer.concat([discriminator("attach_metadata"), anchorString(uri)]);
   const instruction = new TransactionInstruction({
     programId: PROGRAM_ID,

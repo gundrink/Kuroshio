@@ -21,8 +21,9 @@ export function SiteHeader({
   return (
     <header className="site-header">
       <div className="brand-cluster">
-        <Link href="/" className="wordmark">
-          <img src="/logo-text.png" alt="Kuroshio" />
+        <Link href="/" className="wordmark" aria-label="Pool Ninja">
+          <img className="brand-logo" src="/ninja-face.png" alt="" width={72} height={36} />
+          <span>Pool Ninja</span>
         </Link>
         <HeaderMarks xUrl={publicEnv.xUrl} ca={publicEnv.ca} />
       </div>
@@ -31,7 +32,7 @@ export function SiteHeader({
           <>
             <SectionNav />
             <Link className="launch-link" href="/connect">
-              Launch app
+              Open book
             </Link>
           </>
         ) : null}

@@ -79,7 +79,7 @@ export function WalletTransfer({
   address: string;
   walletProvider: Provider | undefined;
 }) {
-  const [asset, setAsset] = useState<AssetSymbol>("kUSDC");
+  const [asset, setAsset] = useState<AssetSymbol>(bookTokens[0].symbol);
   const [amount, setAmount] = useState("0");
   const [destination, setDestination] = useState("");
   const [balance, setBalance] = useState<bigint | null>(null);
@@ -206,7 +206,7 @@ export function WalletTransfer({
         <div className="trade-card receive-card">
           <p className="kicker">Solana devnet</p>
           <h2>Receive</h2>
-          <p>Another wallet sends SOL, kUSDC, kUSDT, kDAI, or kFRAX to this address.</p>
+          <p>Another wallet sends SOL, nUSDC, nUSDT, nPYUSD, or nUSDe to this address.</p>
           <div className="receive-qr">
             <div
               className="receive-qr-frame"
@@ -216,12 +216,12 @@ export function WalletTransfer({
             />
             <div className="receive-qr-meta">
               <div>
-                <strong>Kuroshio</strong>
+                <strong>Pool Ninja</strong>
                 <button type="button" className="receive-short" onClick={copyAddress}>
                   {copied ? "Copied" : shortenWallet(address)}
                 </button>
               </div>
-              <TokenMark symbol="kUSDC" />
+              <TokenMark symbol={bookTokens[0].symbol} />
             </div>
           </div>
           <ul className="asset-list">

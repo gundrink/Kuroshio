@@ -11,7 +11,7 @@ import {
 } from "@solana/web3.js";
 
 const RPC = "https://api.devnet.solana.com";
-const PROGRAM_ID = new PublicKey("2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox");
+const PROGRAM_ID = new PublicKey("GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE");
 // Explorers that call Anchor's fetchIdl read this account, not the program-metadata IDL.
 const IDL_IX_TAG = Buffer.from("40f4bc78a7e9690a", "hex");
 const CHUNK = 900;

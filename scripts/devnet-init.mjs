@@ -19,7 +19,7 @@ import {
 } from "@solana/spl-token";
 
 const RPC = "https://api.devnet.solana.com";
-const PROGRAM_ID = new PublicKey("2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox");
+const PROGRAM_ID = new PublicKey("GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE");
 const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
@@ -201,10 +201,10 @@ const specs = [
   ["kFRAX", 9],
 ];
 const symbolsByMint = {
-  "7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk": "kFRAX",
-  "8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp": "kUSDC",
-  DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp: "kDAI",
-  HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6: "kUSDT",
+  AtKin6p4ecibN42YPBN1gdgBwwU69cWqdWewj7x4tphR: "kFRAX",
+  AogEbswqviQNztUJJZziERHt2SbZMEFBqxj7wQfQLyg5: "kUSDC",
+  "6EVpJryaSzY29qyJQwWQbMt8AbtBSQrZcMkAdHMMbZMn": "kDAI",
+  FNEBoyu8SpihwkA5ApDii13MHwK1scKmrGsefXPkC1ru: "kUSDT",
 };
 let created = [];
 const existingPool = await connection.getAccountInfo(pool);

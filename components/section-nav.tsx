@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 
 export const landingSections = [
-  { id: "current", label: "Current" },
-  { id: "shallows", label: "Shallows" },
-  { id: "charter", label: "Charter" },
-  { id: "passage", label: "Passage" },
-  { id: "soundings", label: "Soundings" },
-  { id: "latitude", label: "Latitude" },
-  { id: "horizon", label: "Horizon" },
+  { id: "current", label: "Watch" },
+  { id: "shallows", label: "Versus" },
+  { id: "charter", label: "Curve" },
+  { id: "passage", label: "Steps" },
+  { id: "soundings", label: "Devnet" },
+  { id: "latitude", label: "Floors" },
+  { id: "horizon", label: "Enter" },
 ] as const;
 
 export function SectionNav() {

@@ -1,19 +1,19 @@
-# Kuroshio
+# Pool Ninja
 
-Kuroshio is a Solana devnet automated market maker for four test stablecoins. kUSDC, kUSDT, kDAI, and kFRAX share one reserve book. A swap of any pair moves that same book, so one pool does the work of six pair markets.
+Pool Ninja is a Solana devnet automated market maker for four test stablecoins. nUSDC, nUSDT, nPYUSD, and nUSDe share one reserve book. A swap of any pair moves that same book, so one pool does the work of six pair markets.
 
 It is an AMM. It is not a CLMM and not a DLMM. Liquidity is not placed in a price range on a single pair, and it is not split into constant-price bins. Eight depeg bands sit on one shared surface around $1.
 
-The app is English. The network is Solana devnet. These tokens are test mints. They are not official USDC, USDT, DAI, or FRAX.
+The app is English. The network is Solana devnet. These tokens are test mints. They are not official USDC, USDT, PYUSD, or USDe.
 
 ## Status
 
 Live on devnet:
 
-- The Kuroshio program is deployed and the book is seeded.
+- The Pool Ninja program is deployed and the book is seeded.
 - Trading is enabled. Eight bands are open. A devnet swap has already settled.
 - The site has a landing page, a wallet connect page, and a swap screen.
-- A connected wallet can claim 1,000 kUSDC once.
+- A connected wallet can claim 1,000 nUSDC once.
 
 Not built yet:
 
@@ -23,7 +23,7 @@ Not built yet:
 
 ## The book
 
-Four stablecoins normally need six markets. Depth in one pair never reaches the others. Kuroshio keeps the four reserves in one vector. Paying kUSDC to receive kFRAX, or paying kDAI to receive kUSDT, reads the same vector.
+Four stablecoins normally need six markets. Depth in one pair never reaches the others. Pool Ninja keeps the four reserves in one vector. Paying nUSDC to receive nUSDe, or paying nPYUSD to receive nUSDT, reads the same vector.
 
 Reserves stay on a sphere. `r` is the radius. `xᵢ` is the reserve of coin `i`. `n` is the number of coins, which is 4.
 
@@ -57,24 +57,24 @@ When the cheapest coin falls through a floor, that band stops quoting. The bands
 
 ## Assets
 
-The book uses Kuroshio’s own SPL mints so the program can be the mint authority. Decimals follow the asset each test coin stands in for. Inside the program, every amount is scaled to 9 decimals.
+The book uses Pool Ninja’s own SPL mints so the program can be the mint authority. Decimals follow the asset each test coin stands in for. Inside the program, every amount is scaled to 9 decimals.
 
-The pool stores mints in ascending public-key order. That order is kFRAX, kUSDC, kDAI, kUSDT. The interface maps a symbol to its mint, then to that index.
+The pool stores mints in ascending public-key order. That order is nUSDe, nUSDC, nPYUSD, nUSDT. The interface maps a symbol to its mint, then to that index.
 
 | Symbol | Decimals | Mint | Vault |
 | --- | --- | --- | --- |
-| kFRAX | 9 | `7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk` | `DoGhvx1uBexXNnts5Trxh8qKpgpp9j8k4uWA8ur3m8m1` |
-| kUSDC | 6 | `8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp` | `DtxmU7chWYzk1oxMsniJBCKZGZTwJ1h8cXMtCbDMJQUh` |
-| kDAI | 9 | `DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp` | `GchYn3GowWvdqdPZqj8GK1aAMxnJjAtJVKvDaHyAoHJ` |
-| kUSDT | 6 | `HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6` | `75LjvtLfenYkkrD2FpMkxS1fE7s9QyGHLpiwEjVKL7jm` |
+| nUSDe | 9 | `AtKin6p4ecibN42YPBN1gdgBwwU69cWqdWewj7x4tphR` | `89ksqKJSAk4YsPjbyzknycwgbHTZx6LdZbyNu16rXVpj` |
+| nUSDC | 6 | `AogEbswqviQNztUJJZziERHt2SbZMEFBqxj7wQfQLyg5` | `9EndR64bdU7cuQtQtJKy5s8Ksd5XMkuHgvBhzJcyPMuq` |
+| nPYUSD | 9 | `6EVpJryaSzY29qyJQwWQbMt8AbtBSQrZcMkAdHMMbZMn` | `6TXGMSJGSF7hxqPetEUtg9FmXVwcu92bs2kQVpqCAHka` |
+| nUSDT | 6 | `FNEBoyu8SpihwkA5ApDii13MHwK1scKmrGsefXPkC1ru` | `7wtA1KNne2g47RxjaonxJu1vqzmGRNzjEqCiAEiAUgtb` |
 
 ## What a person can do
 
-1. Open the landing page. The header jumps to Current, Shallows, Charter, Passage, Soundings, Latitude, and Horizon.
+1. Open the landing page. The header jumps to Now, Split, Book, Path, Live, Bands, and Next.
 2. Launch app goes to Connect a wallet. The wallet must be on Solana devnet. Email and social login are off. Reown is wallet-only.
 3. Swap opens only after the wallet is connected. The form is Pay, amount, and Receive. Slippage is a setting, with presets 0.1%, 0.5%, and 1%, or a custom value from 0.01% to 50%. The default is 0.5%. A quote expires 120 seconds after it is signed.
 4. Pay with SOL to buy any of the four book tokens. 1 SOL mints 100 whole tokens. The SOL is paid to the deployer treasury. The sphere reserves do not move, because SOL is not one of the four stablecoins. One buy can spend at most 100 SOL.
-5. Claim 1,000 kUSDC mints that amount to the connected wallet. The program allows this once per wallet. The browser also stores the wallet under `kuroshio.reward.kusdc`, so the button stays on “kUSDC reward claimed” after a reload. Clearing that storage shows the button again. The program still refuses a second mint for the same wallet.
+5. Claim 1,000 nUSDC mints that amount to the connected wallet. The program allows this once per wallet. The browser also stores the wallet under `kuroshio.reward.kusdc`, so the button stays on “nUSDC reward claimed” after a reload. Clearing that storage shows the button again. The program still refuses a second mint for the same wallet.
 6. Book and Bands show a Coming soon screen.
 
 The header shows an X icon from `NEXT_PUBLIC_X_URL` and a CA chip from `NEXT_PUBLIC_CA`. The chip reads `CA :` plus the first four and last four characters. A click copies the full value.
@@ -84,14 +84,14 @@ The header shows an X icon from `NEXT_PUBLIC_X_URL` and a CA chip from `NEXT_PUB
 | Account | Address |
 | --- | --- |
 | Cluster | Solana devnet, `https://api.devnet.solana.com` |
-| Program | `2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox` |
+| Program | `GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE` |
 | Pool | `8ribZ2EAvQVN1kppxXd9EfVPaTufV8D7pbpnNucdWvg` |
 | Mint authority | `2v6Agxq87QcJ6rs9j8ZyU7hkphH1yYRSMTd7wZmHi4iy` |
 | Deployer | `DCYGieAFCYNvmNRDj3Aoi4qTpZAVC4RsKbGUqDn4RJdp` |
 
-The first confirmed swap is `a7vFHh9wJ9pNKMfPMHVJq1TkP1xzzr9TGRgEYdEpmu5JHGYw79okvbSUuy4rjWDSVJ3kRrqQN4AjYEcX91WA5UZ`. It paid 10 kFRAX and received kUSDC.
+The first confirmed swap is `a7vFHh9wJ9pNKMfPMHVJq1TkP1xzzr9TGRgEYdEpmu5JHGYw79okvbSUuy4rjWDSVJ3kRrqQN4AjYEcX91WA5UZ`. It paid 10 nUSDe and received nUSDC.
 
-Orca Whirlpool and Raydium CLMM addresses are kept in the environment for a later window onto the same mints. The price a person swaps against today is the Kuroshio book.
+Orca Whirlpool and Raydium CLMM addresses are kept in the environment for a later window onto the same mints. The price a person swaps against today is the Pool Ninja book.
 
 ## Program surface
 

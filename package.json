@@ -1,5 +1,5 @@
 {
-  "name": "kuroshio",
+  "name": "pool-ninja",
   "private": true,
   "scripts": {
     "dev": "next dev",

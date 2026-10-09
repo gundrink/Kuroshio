@@ -62,10 +62,10 @@ export const publicEnv = {
 };
 
 export const bookTokens = [
-  { symbol: "kUSDC", decimals: 6, mint: publicEnv.mintKusdc },
-  { symbol: "kUSDT", decimals: 6, mint: publicEnv.mintKusdt },
-  { symbol: "kDAI", decimals: 9, mint: publicEnv.mintKdai },
-  { symbol: "kFRAX", decimals: 9, mint: publicEnv.mintKfrax },
+  { symbol: "nUSDC", decimals: 6, mint: publicEnv.mintKusdc },
+  { symbol: "nUSDT", decimals: 6, mint: publicEnv.mintKusdt },
+  { symbol: "nPYUSD", decimals: 9, mint: publicEnv.mintKdai },
+  { symbol: "nUSDe", decimals: 9, mint: publicEnv.mintKfrax },
 ] as const;
 
 export const venueAddresses = [

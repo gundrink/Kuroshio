@@ -5,10 +5,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-kuroshio = "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox"
+kuroshio = "GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE"
 
 [programs.devnet]
-kuroshio = "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox"
+kuroshio = "GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE"
 
 [provider]
 cluster = "devnet"

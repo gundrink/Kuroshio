@@ -14,7 +14,7 @@ if (typeof globalThis.Buffer === "undefined") {
 }
 
 export const PROGRAM_ID = new PublicKey(
-  publicEnv.programId || "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox",
+  publicEnv.programId || "GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE",
 );
 export const TOKEN_PROGRAM_ID = new PublicKey(publicEnv.splTokenProgram);
 export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(publicEnv.associatedTokenProgram);
@@ -276,7 +276,7 @@ export function faucetTransaction(user: PublicKey, book: OnchainBook) {
 
 export function claimKusdcTransaction(user: PublicKey, book: OnchainBook) {
   const index = book.mints.findIndex((mint) => mint.toBase58() === publicEnv.mintKusdc);
-  if (index < 0) throw new Error("kUSDC is not in this book");
+  if (index < 0) throw new Error("nUSDC is not in this book");
   const transaction = new Transaction();
   transaction.add(faucetInstruction(user, book, index));
   return transaction;

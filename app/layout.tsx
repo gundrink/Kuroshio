@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Newsreader } from "next/font/google";
+import { Manrope, Syne } from "next/font/google";
 import { AppKitProvider } from "@/lib/appkit";
 import "./globals.css";
 
@@ -8,15 +8,16 @@ const ui = Manrope({
   variable: "--font-ui",
 });
 
-const display = Newsreader({
+const display = Syne({
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  weight: ["500", "600", "700"],
   variable: "--font-display",
 });
 
 export const metadata: Metadata = {
-  title: "Kuroshio",
-  description: "One book for every stablecoin on Solana devnet.",
+  title: "Pool Ninja",
+  description: "Four devnet stablecoins. One reserve. Pool Ninja.",
+  icons: { icon: "/ninja-face.png" },
   robots: { index: false, follow: false },
 };
 

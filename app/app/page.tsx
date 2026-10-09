@@ -204,12 +204,12 @@ function SoonArt({ kind }: { kind: "book" | "bands" }) {
   if (kind === "book") {
     return (
       <svg className="soon-art" viewBox="0 0 160 96" aria-hidden="true">
-        <circle cx="80" cy="48" r="30" fill="none" stroke="#1aa6a0" strokeWidth="1.4" />
-        <circle cx="80" cy="48" r="7" fill="#1aa6a0" />
-        <circle cx="26" cy="48" r="3.2" fill="#8fe3dc" />
-        <circle cx="48" cy="48" r="3.2" fill="#8fe3dc" opacity="0.75" />
-        <circle cx="112" cy="48" r="3.2" fill="#8fe3dc" opacity="0.75" />
-        <circle cx="134" cy="48" r="3.2" fill="#8fe3dc" />
+        <circle cx="80" cy="48" r="30" fill="none" stroke="#c8102e" strokeWidth="1.4" />
+        <circle cx="80" cy="48" r="7" fill="#c8102e" />
+        <circle cx="26" cy="48" r="3.2" fill="#ffb4be" />
+        <circle cx="48" cy="48" r="3.2" fill="#ffb4be" opacity="0.75" />
+        <circle cx="112" cy="48" r="3.2" fill="#ffb4be" opacity="0.75" />
+        <circle cx="134" cy="48" r="3.2" fill="#ffb4be" />
       </svg>
     );
   }
@@ -221,7 +221,7 @@ function SoonArt({ kind }: { kind: "book" | "bands" }) {
           key={radius}
           d={`M${80 - radius} 68a${radius} ${radius} 0 0 1 ${radius * 2} 0`}
           fill="none"
-          stroke="#1aa6a0"
+          stroke="#c8102e"
           strokeWidth="1.7"
           strokeLinecap="round"
           opacity={0.28 + index * 0.2}
@@ -496,7 +496,7 @@ function ApplicationScreen() {
       await send(claimKusdcTransaction(new PublicKey(address), book));
       saveClaimedReward(window.localStorage, address);
       setClaimed(true);
-      setNotice("1,000 kUSDC is in the wallet. This reward can be claimed once.");
+      setNotice("1,000 nUSDC is in the wallet. This reward can be claimed once.");
     } catch (error) {
       const message = explainProgramError(error);
       if (message.includes("already claimed")) {
@@ -580,7 +580,7 @@ function ApplicationScreen() {
               </button>
               {programReady ? (
                 <button type="button" className="trade-faucet" disabled={pending || !book || claimed} onClick={onClaim}>
-                  {claimed ? "kUSDC reward claimed" : "Claim 1,000 kUSDC"}
+                  {claimed ? "nUSDC reward claimed" : "Claim 1,000 nUSDC"}
                 </button>
               ) : null}
               {notice ? <p className="trade-notice">{notice}</p> : null}
@@ -638,7 +638,7 @@ function ApplicationScreen() {
           <ComingSoon
             kind="book"
             title="Book"
-            body="One reserve for kUSDC, kUSDT, kDAI, and kFRAX. It opens when the devnet pool is issued."
+            body="nUSDC, nUSDT, nPYUSD, nUSDe, nEURC, nFDUSD, nGHO, and nUSDS share this book. It opens once the devnet pool is issued."
           />
         ) : null}
 

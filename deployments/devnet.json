@@ -1,20 +1,20 @@
 {
   "cluster": "devnet",
-  "programId": "2Q7mJej5TW3y5Uadf68KPFKV1BnKrDAibQLDZXyZyPox",
-  "pool": "8ribZ2EAvQVN1kppxXd9EfVPaTufV8D7pbpnNucdWvg",
-  "authority": "2v6Agxq87QcJ6rs9j8ZyU7hkphH1yYRSMTd7wZmHi4iy",
+  "programId": "GRG9CqaYABVi2Z67CBFbkq9vHC8VJ2CtvCtmqs3woHqE",
+  "pool": "DHjNNiw5C8BSDpyopbP4Rziy78jweeMzgfTLvGf4BHec",
+  "authority": "CLYbspWxeFhDAi3QgFj5m1ARX1bZQDA3vy1LNx3WJQ71",
   "deployer": "DCYGieAFCYNvmNRDj3Aoi4qTpZAVC4RsKbGUqDn4RJdp",
   "mints": {
-    "kFRAX": "7vkrapQkKwh3cmRjm1Xr21cxSZMqiJ2Pri3ia3v6E5Pk",
-    "kUSDC": "8BMVR8aJ8Xie5xFxRAr7EXM8fk44AcF8U78cFAJgDjKp",
-    "kDAI": "DDTNBEGC5QN6pRN1GJMrG1yDk7Z6YP6P5eAmmdehEGfp",
-    "kUSDT": "HhDcQ5A99d5fkwWX8pAjnVimF2cykenuZu7HZuJ9j7G6"
+    "kDAI": "6EVpJryaSzY29qyJQwWQbMt8AbtBSQrZcMkAdHMMbZMn",
+    "kUSDC": "AogEbswqviQNztUJJZziERHt2SbZMEFBqxj7wQfQLyg5",
+    "kFRAX": "AtKin6p4ecibN42YPBN1gdgBwwU69cWqdWewj7x4tphR",
+    "kUSDT": "FNEBoyu8SpihwkA5ApDii13MHwK1scKmrGsefXPkC1ru"
   },
   "vaults": {
-    "kFRAX": "DoGhvx1uBexXNnts5Trxh8qKpgpp9j8k4uWA8ur3m8m1",
-    "kUSDC": "DtxmU7chWYzk1oxMsniJBCKZGZTwJ1h8cXMtCbDMJQUh",
-    "kDAI": "GchYn3GowWvdqdPZqj8GK1aAMxnJjAtJVKvDaHyAoHJ",
-    "kUSDT": "75LjvtLfenYkkrD2FpMkxS1fE7s9QyGHLpiwEjVKL7jm"
+    "kDAI": "6TXGMSJGSF7hxqPetEUtg9FmXVwcu92bs2kQVpqCAHka",
+    "kUSDC": "9EndR64bdU7cuQtQtJKy5s8Ksd5XMkuHgvBhzJcyPMuq",
+    "kFRAX": "89ksqKJSAk4YsPjbyzknycwgbHTZx6LdZbyNu16rXVpj",
+    "kUSDT": "7wtA1KNne2g47RxjaonxJu1vqzmGRNzjEqCiAEiAUgtb"
   },
-  "swap": "a7vFHh9wJ9pNKMfPMHVJq1TkP1xzzr9TGRgEYdEpmu5JHGYw79okvbSUuy4rjWDSVJ3kRrqQN4AjYEcX91WA5UZ"
+  "swap": "5f3FQMfwSn3dk862JPGd6BgLiAVSns4ybxePLgff2ZBjNvEMxeBhTQJxxunLSt3TkhUvVAXKNY1XZ6hF1hXrowBg"
 }
