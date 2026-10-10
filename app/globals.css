@@ -122,22 +122,12 @@ a {
   line-height: 1;
 }
 
-.brand-logo {
+.brand-lockup {
   display: block;
-  height: 2.15rem;
-  width: 2.15rem;
+  height: 2.35rem;
+  width: auto;
   flex: none;
-  object-fit: contain;
   mix-blend-mode: screen;
-}
-
-.brand-word {
-  display: block;
-  height: 2.15rem;
-  width: 5.15rem;
-  flex: none;
-  object-fit: cover;
-  object-position: right center;
 }
 
 .site-nav {
@@ -1518,7 +1508,6 @@ img.token-mark {
   width: min(7.5rem, 46%);
   height: auto;
   margin: 0 auto 1.15rem;
-  mix-blend-mode: screen;
 }
 
 .connect-kicker {

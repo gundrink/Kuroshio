@@ -24,7 +24,7 @@ createAppKit({
     name: "Pool Ninja",
     description: "One book for every stablecoin on Solana devnet.",
     url: origin,
-    icons: [`${origin}/logo-ninja.png`],
+    icons: [`${origin}/poolninja.png`],
   },
   features: {
     analytics: false,

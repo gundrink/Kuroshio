@@ -18,13 +18,13 @@ const ticker = [
 
 const steps = [
   {
-    title: "The lineup sits together",
-    body: "nUSDC, nUSDT, nPYUSD, nUSDe, nEURC, nFDUSD, nGHO, and nUSDS sit in one lineup. Swapping nUSDC for nUSDT moves the same balances as swapping nPYUSD for nUSDe.",
+    title: "Four coins, one book",
+    body: "nUSDC, nUSDT, nPYUSD, and nUSDe are the coins you can swap. Paying any one of them to receive another moves the same balances.",
     note: "six routes, one book",
   },
   {
-    title: "Choose a floor",
-    body: "Most of the seed is stacked close to $1. A tight floor earns more while the peg holds. A wide floor stays through a bigger slip.",
+    title: "The seed is already split",
+    body: "You do not pick a floor. Most of the seed sits close to $1. A tight floor quotes while the peg holds. A wide floor is there if a coin slips further.",
     note: "$0.9995 down to full range",
   },
   {
@@ -65,7 +65,7 @@ export default function LandingPage() {
             <p className="eyebrow">Under watch</p>
             <h1>A ninja keeps the pool.</h1>
             <p className="lede">
-              nUSDC, nUSDT, nPYUSD, nUSDe, nEURC, nFDUSD, nGHO, and nUSDS sit in one book.
+              nUSDC, nUSDT, nPYUSD, and nUSDe share one book. nEURC, nFDUSD, nGHO, and nUSDS are named on the lineup, and they are not in the book yet.
               The watch stays on the reserves, so a slip in one coin does not walk off with the rest.
               Pay, amount, and receive still draw on <strong>the whole book</strong>.
             </p>
@@ -114,11 +114,11 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <dt>You receive</dt>
-                  <dd>nEURC</dd>
+                  <dd>nUSDe</dd>
                 </div>
                 <div>
                   <dt>Size you touch</dt>
-                  <dd>The whole lineup</dd>
+                  <dd>The shared book</dd>
                 </div>
                 <div>
                   <dt>If a coin slips</dt>
@@ -221,9 +221,9 @@ export default function LandingPage() {
             </li>
           </ol>
           <p className="charter-close">
-            The opening seed is cut into eight floors: 40% above $0.9995, then 27%, 15%, 8%, 4%, 3%, 2%,
-            and 1% across the full range. Tight floors do the trading near a dollar. A broken coin retires
-            those floors and leaves the wider ones standing. Rounding favors the pool.
+            The opening seed is split into eight floors: 40% at $0.9995, then 27%, 15%, 8%, 4%, 3%, 2%,
+            and 1% with no floor. A tight floor quotes near a dollar. If the cheapest coin falls through a
+            floor, that slice stops and the wider floors keep quoting.
           </p>
         </section>
 
@@ -285,6 +285,9 @@ export default function LandingPage() {
         <section className="section" id="latitude">
           <p className="kicker">Floors</p>
           <h2>The seed leans toward $1.</h2>
+          <p className="section-lede">
+            The opening seed is split into eight floors. A tight floor does the trading near a dollar. If the cheapest coin falls through a floor, that slice stops and the wider floors keep quoting. Full range has no floor, so it does not stop.
+          </p>
           <ul className="band-pills">
             {depegBands.map((band) => (
               <li key={band.price}>
@@ -303,7 +306,7 @@ export default function LandingPage() {
       <footer className="site-footer">
         <div>
           <strong>Pool Ninja</strong>
-          <p>A ninja watches one book on Solana devnet. nUSDC, nUSDT, nPYUSD, nUSDe, nEURC, nFDUSD, nGHO, and nUSDS. Orca and Raydium open a window onto the same mints.</p>
+          <p>A ninja watches one book on Solana devnet. nUSDC, nUSDT, nPYUSD, and nUSDe share it. nEURC, nFDUSD, nGHO, and nUSDS are named beside that book.</p>
         </div>
         <nav aria-label="App">
           <p>App</p>

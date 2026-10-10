@@ -2,13 +2,14 @@
 
 import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import type { Provider } from "@reown/appkit-adapter-solana/react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Connection, PublicKey, Transaction } from "@solana/web3.js";
-import { Suspense, useEffect, useId, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { TokenMark } from "@/components/token-mark";
 import { WalletTransfer } from "@/components/wallet-transfer";
-import { bookTokens, publicEnv } from "@/lib/env";
+import { bookTokens, depegBands, publicEnv } from "@/lib/env";
 import {
   buyWithSolTransaction,
   claimKusdcTransaction,
@@ -200,53 +201,187 @@ function TokenPill<T extends string>({
   );
 }
 
-function SoonArt({ kind }: { kind: "book" | "bands" }) {
-  if (kind === "book") {
-    return (
-      <svg className="soon-art" viewBox="0 0 160 96" aria-hidden="true">
-        <circle cx="80" cy="48" r="30" fill="none" stroke="#c8102e" strokeWidth="1.4" />
-        <circle cx="80" cy="48" r="7" fill="#c8102e" />
-        <circle cx="26" cy="48" r="3.2" fill="#ffb4be" />
-        <circle cx="48" cy="48" r="3.2" fill="#ffb4be" opacity="0.75" />
-        <circle cx="112" cy="48" r="3.2" fill="#ffb4be" opacity="0.75" />
-        <circle cx="134" cy="48" r="3.2" fill="#ffb4be" />
-      </svg>
-    );
+function formatBookAmount(amount: bigint) {
+  const cents = (amount + 5_000_000n) / 10_000_000n;
+  const whole = cents / 100n;
+  const fraction = (cents % 100n).toString().padStart(2, "0").replace(/0+$/, "");
+  const grouped = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return fraction ? `${grouped}.${fraction}` : grouped;
+}
+
+function floorLabel(priceBps: number) {
+  if (priceBps === 0) return "Full range";
+  return `$${(priceBps / 10_000).toFixed(4)}`;
+}
+
+function livePrice(bps: bigint) {
+  const whole = bps / 10_000n;
+  const fraction = (bps % 10_000n).toString().padStart(4, "0");
+  return `$${whole.toString()}.${fraction}`;
+}
+
+function shortMint(mint: string) {
+  return mint ? `${mint.slice(0, 4)}…${mint.slice(-4)}` : "Not issued";
+}
+
+function coinRows(book: OnchainBook) {
+  return bookTokens.map((token) => {
+    const index = book.mints.findIndex((mint) => mint.toBase58() === token.mint);
+    const reserve = index < 0 ? null : book.bands.reduce((sum, band) => sum + band.reserves[index], 0n);
+    return { token, index, reserve };
+  });
+}
+
+function quotingState(book: OnchainBook) {
+  const totals = [0n, 0n, 0n, 0n];
+  let open = 0;
+  for (const band of book.bands) {
+    if (band.frozen) continue;
+    open += 1;
+    band.reserves.forEach((value, index) => {
+      totals[index] += value;
+    });
   }
+  return { totals, open };
+}
+
+function cheapestBps(radius: bigint, reserves: bigint[]) {
+  let minGap: bigint | null = null;
+  let maxGap = 0n;
+  for (const reserve of reserves) {
+    if (reserve > radius) return null;
+    const gap = radius - reserve;
+    if (minGap === null || gap < minGap) minGap = gap;
+    if (gap > maxGap) maxGap = gap;
+  }
+  if (minGap === null || maxGap === 0n) return null;
+  return (minGap * 10_000n) / maxGap;
+}
+
+function BookReadout({ book }: { book: OnchainBook }) {
+  const rows = coinRows(book);
+  const { totals, open } = quotingState(book);
+  const price = open > 0 ? cheapestBps(book.radius, totals) : null;
+  const priced = rows.filter((row) => row.index >= 0);
+  const richest = priced.reduce((best, row) => (row.reserve !== null && row.reserve > best ? row.reserve : best), 0n);
+  const cheapest = priced.filter((row) => row.reserve === richest).map((row) => row.token.symbol);
+  const even = cheapest.length === priced.length;
+  const priceText =
+    price === null
+      ? "The live price is not available."
+      : even || priced.length === 0
+        ? `All four coins are the same price, ${livePrice(price)}.`
+        : `${cheapest.join(" and ")} ${cheapest.length > 1 ? "are" : "is"} cheapest, at ${livePrice(price)}.`;
 
   return (
-    <svg className="soon-art" viewBox="0 0 160 96" aria-hidden="true">
-      {[36, 28, 20, 12].map((radius, index) => (
-        <path
-          key={radius}
-          d={`M${80 - radius} 68a${radius} ${radius} 0 0 1 ${radius * 2} 0`}
-          fill="none"
-          stroke="#c8102e"
-          strokeWidth="1.7"
-          strokeLinecap="round"
-          opacity={0.28 + index * 0.2}
-        />
-      ))}
-    </svg>
+    <>
+      <p className="ledger-now">
+        {book.tradingEnabled ? "Trading is open." : "Trading is closed."} {open} of {book.bands.length} floors are
+        quoting. {priceText}
+      </p>
+      <ul className="coin-ledger">
+        {rows.map((row) => (
+          <li key={row.token.symbol}>
+            <TokenMark symbol={row.token.symbol} />
+            <div>
+              <strong>{row.token.symbol}</strong>
+              <span>
+                {row.token.decimals} decimals · {shortMint(row.token.mint)}
+              </span>
+            </div>
+            <div className="coin-amount">
+              <strong>{row.reserve === null ? "—" : formatBookAmount(row.reserve)}</strong>
+              <span>{row.reserve === null ? "Not in this book" : "in the book"}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 
-function ComingSoon({
-  kind,
+function BandsReadout({ book }: { book: OnchainBook }) {
+  const rows = coinRows(book);
+  const { totals, open } = quotingState(book);
+  const price = open > 0 ? cheapestBps(book.radius, totals) : null;
+
+  return (
+    <>
+      <p className="ledger-now">
+        {price === null
+          ? "No floor is quoting right now."
+          : `Cheapest coin right now: ${livePrice(price)}. ${open} of ${book.bands.length} floors are still quoting.`}
+      </p>
+      <ol className="slice-list">
+        {book.bands.map((band, index) => {
+          const share = depegBands.find((item) => item.priceBps === band.priceBps)?.share;
+          const floor = floorLabel(band.priceBps);
+          const state = band.frozen ? "Stopped" : band.priceBps === 0 ? "No floor" : "Quoting";
+          const meaning = band.priceBps === 0
+            ? "This slice has no floor, so it keeps quoting after the others stop."
+            : band.frozen
+              ? `Stopped. The cheapest coin fell below ${floor}, so this slice no longer quotes.`
+              : `Still quoting. It stops if the cheapest coin falls below ${floor}.`;
+          return (
+            <li className="slice" key={`${band.priceBps}-${index}`}>
+              <header>
+                <strong>{floor}</strong>
+                <span>{share ? `${share} of the opening seed` : "Opening seed"}</span>
+                <em className={band.frozen ? "slice-state is-stopped" : band.priceBps === 0 ? "slice-state is-steady" : "slice-state is-quoting"}>
+                  {state}
+                </em>
+              </header>
+              <p>{meaning}</p>
+              <ul className="slice-reserves">
+                {rows.map((row) => (
+                  <li key={row.token.symbol}>
+                    <span>{row.token.symbol}</span>
+                    <strong>{row.index < 0 ? "—" : formatBookAmount(band.reserves[row.index])}</strong>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          );
+        })}
+      </ol>
+    </>
+  );
+}
+
+function Ledger({
+  label,
+  kicker,
   title,
-  body,
+  lead,
+  book,
+  bookError,
+  ready,
+  children,
+  next,
 }: {
-  kind: "book" | "bands";
+  label: string;
+  kicker: string;
   title: string;
-  body: string;
+  lead: string;
+  book: OnchainBook | null;
+  bookError: string;
+  ready: boolean;
+  children: (book: OnchainBook) => ReactNode;
+  next: { href: string; label: string };
 }) {
   return (
-    <section className="trade soon" aria-label={title}>
-      <div className="soon-card">
-        <p className="soon-kicker">Coming soon</p>
+    <section className="trade ledger" aria-label={label}>
+      <div className="ledger-card">
+        <p className="ledger-kicker">{kicker}</p>
         <h2>{title}</h2>
-        <p>{body}</p>
-        <SoonArt kind={kind} />
+        <p className="ledger-lead">{lead}</p>
+        {book ? children(book) : <p className="ledger-message">{bookError || (ready ? "Loading the book…" : "Loading…")}</p>}
+        <p className="ledger-note">
+          Only nUSDC, nUSDT, nPYUSD, and nUSDe can be swapped. A name on the landing page that is not in this list is not in the book.
+        </p>
+        <Link className="ledger-link" href={next.href}>
+          {next.label}
+        </Link>
       </div>
     </section>
   );
@@ -310,7 +445,7 @@ function ApplicationScreen() {
   }, [address]);
 
   useEffect(() => {
-    if (!ready || !isConnected || !publicEnv.programId) return;
+    if (!ready || !publicEnv.programId) return;
     const connection = new Connection(publicEnv.rpcUrl, "confirmed");
     let stop = false;
     const load = () => {
@@ -333,7 +468,7 @@ function ApplicationScreen() {
       stop = true;
       window.clearInterval(timer);
     };
-  }, [ready, isConnected]);
+  }, [ready]);
   const programReady = publicEnv.programId.length > 0;
   const payingSol = pay === "SOL";
   const receiveOptions = bookTokens.filter((token) => token.symbol !== pay).map((token) => token.symbol);
@@ -635,19 +770,33 @@ function ApplicationScreen() {
         ) : null}
 
         {panel === "book" ? (
-          <ComingSoon
-            kind="book"
+          <Ledger
+            label="Book"
+            kicker="Four coins"
             title="Book"
-            body="nUSDC, nUSDT, nPYUSD, nUSDe, nEURC, nFDUSD, nGHO, and nUSDS share this book. It opens once the devnet pool is issued."
-          />
+            lead="These four test coins share one reserve. Paying any of them to receive another uses this same book. SOL can buy them, and SOL is not one of the four reserves."
+            book={book}
+            bookError={programReady ? bookError : "The devnet program is not set."}
+            ready={ready}
+            next={{ href: "/app?panel=bands", label: "See the eight floors" }}
+          >
+            {(loaded) => <BookReadout book={loaded} />}
+          </Ledger>
         ) : null}
 
         {panel === "bands" ? (
-          <ComingSoon
-            kind="bands"
+          <Ledger
+            label="Bands"
+            kicker="Eight floors"
             title="Bands"
-            body="Liquidity nested around a dollar. The bands open together with the book."
-          />
+            lead="Each band is one slice of the same four coins, with its own floor. You do not choose a slice. If the cheapest coin falls through a floor, that slice stops quoting and the slices still above their floor keep trading. One swap can stop at most three slices."
+            book={book}
+            bookError={programReady ? bookError : "The devnet program is not set."}
+            ready={ready}
+            next={{ href: "/app?panel=book", label: "See the four coins" }}
+          >
+            {(loaded) => <BandsReadout book={loaded} />}
+          </Ledger>
         ) : null}
       </main>
     </>

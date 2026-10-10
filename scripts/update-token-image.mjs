@@ -43,7 +43,7 @@ function updateData(name, symbol, uri) {
   return Buffer.concat(parts);
 }
 
-const imageUrl = "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/logo-ninja.png";
+const imageUrl = "https://raw.githubusercontent.com/gundrink/pool-ninja/main/public/poolninja.png";
 console.log("image", imageUrl);
 
 for (const [symbol, name, mintAddress, file] of TOKENS) {

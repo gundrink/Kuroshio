@@ -22,8 +22,7 @@ export function SiteHeader({
     <header className="site-header">
       <div className="brand-cluster">
         <Link href="/" className="wordmark" aria-label="Pool Ninja">
-          <img className="brand-logo" src="/logo-ninja.png" alt="" width={36} height={36} />
-          <img className="brand-word" src="/logo-textninja.png" alt="Pool Ninja" width={240} height={71} />
+          <img className="brand-lockup" src="/poolninja-textheader.png" alt="Pool Ninja" width={1024} height={341} />
         </Link>
         <HeaderMarks xUrl={publicEnv.xUrl} ca={publicEnv.ca} />
       </div>

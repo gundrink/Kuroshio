@@ -17,7 +17,7 @@ Live on devnet:
 
 Not built yet:
 
-- The Book and Bands screens are Coming soon. They are not liquidity positions.
+- Book shows the four coins in the shared reserve. Bands shows the eight floors and whether each slice is still quoting. Neither screen is a liquidity position.
 - Orca and Raydium are recorded as addresses only. No satellite pair pool has been opened.
 - There is no mainnet deployment and no use of real funds.
 
@@ -75,7 +75,7 @@ The pool stores mints in ascending public-key order. That order is nUSDe, nUSDC,
 3. Swap opens only after the wallet is connected. The form is Pay, amount, and Receive. Slippage is a setting, with presets 0.1%, 0.5%, and 1%, or a custom value from 0.01% to 50%. The default is 0.5%. A quote expires 120 seconds after it is signed.
 4. Pay with SOL to buy any of the four book tokens. 1 SOL mints 100 whole tokens. The SOL is paid to the deployer treasury. The sphere reserves do not move, because SOL is not one of the four stablecoins. One buy can spend at most 100 SOL.
 5. Claim 1,000 nUSDC mints that amount to the connected wallet. The program allows this once per wallet. The browser also stores the wallet under `kuroshio.reward.kusdc`, so the button stays on “nUSDC reward claimed” after a reload. Clearing that storage shows the button again. The program still refuses a second mint for the same wallet.
-6. Book and Bands show a Coming soon screen.
+6. Book lists the four coins and how much of each sits in the reserve. Bands lists the eight floors, the share of the opening seed, and whether that slice is still quoting.
 
 The header shows an X icon from `NEXT_PUBLIC_X_URL` and a CA chip from `NEXT_PUBLIC_CA`. The chip reads `CA :` plus the first four and last four characters. A click copies the full value.
 

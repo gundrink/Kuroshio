@@ -19,7 +19,7 @@ export default function ConnectPage() {
       <SiteHeader current="connect" swapHref={ready && isConnected ? "/app?panel=swap" : "/connect"} />
       <main className="connect-stage">
         <section className="connect-panel" aria-label="Connect wallet">
-          <img className="connect-mark" src="/logo-ninja.png" alt="" width={148} height={148} />
+          <img className="connect-mark" src="/poolninja.png" alt="" width={148} height={148} />
           <p className="connect-kicker">Solana devnet</p>
           <h1>Connect a wallet</h1>
           <p className="connect-lead">One wallet signature.</p>

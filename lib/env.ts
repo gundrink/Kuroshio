@@ -81,12 +81,12 @@ export const venueAddresses = [
 ] as const;
 
 export const depegBands = [
-  { price: "$0.9995", share: "40%" },
-  { price: "$0.9990", share: "27%" },
-  { price: "$0.9950", share: "15%" },
-  { price: "$0.9900", share: "8%" },
-  { price: "$0.9800", share: "4%" },
-  { price: "$0.9500", share: "3%" },
-  { price: "$0.9000", share: "2%" },
-  { price: "Full range", share: "1%" },
+  { price: "$0.9995", priceBps: 9995, share: "40%" },
+  { price: "$0.9990", priceBps: 9990, share: "27%" },
+  { price: "$0.9950", priceBps: 9950, share: "15%" },
+  { price: "$0.9900", priceBps: 9900, share: "8%" },
+  { price: "$0.9800", priceBps: 9800, share: "4%" },
+  { price: "$0.9500", priceBps: 9500, share: "3%" },
+  { price: "$0.9000", priceBps: 9000, share: "2%" },
+  { price: "Full range", priceBps: 0, share: "1%" },
 ] as const;
